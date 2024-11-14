@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TextField?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.EmployeeController">
+    <TableView fx:id="employeeTable">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" />
+            <TableColumn fx:id="lastNameColumn" text="Фамилия" />
+            <TableColumn fx:id="firstNameColumn" text="Имя" />
+            <TableColumn fx:id="surnameColumn" text="Отчество" />
+            <TableColumn fx:id="departmentColumn" text="Отдел" />
+            <TableColumn fx:id="positionColumn" text="Должность" />
+        </columns>
+    </TableView>
+
+    <TextField fx:id="lastNameField" promptText="Фамилия"/>
+    <TextField fx:id="firstNameField" promptText="Имя" />
+    <TextField fx:id="surnameField" promptText="Отчество"/>
+    <TextField fx:id="departmentField" promptText="Отдел"/>
+    <TextField fx:id="positionField" promptText="Должность"/>
+
+    <Button text="Добавить" onAction="#handleAddEmployee" />
+    <Button text="Удалить" onAction="#handleDeleteEmployee" />
+
+</VBox>
