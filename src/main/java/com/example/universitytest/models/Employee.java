@@ -8,12 +8,11 @@ public class Employee {
     private SimpleIntegerProperty id;
     private SimpleStringProperty firstName;
     private SimpleStringProperty lastName;
-    private SimpleStringProperty surname; // Если нужно, оставляем; иначе удаляем это поле
+    private SimpleStringProperty surname;
     private SimpleStringProperty department;
     private SimpleStringProperty position;
     private SimpleDoubleProperty baseSalary;
 
-    // Исправленный конструктор с параметром `surname`
     public Employee(int id, String firstName, String lastName, String surname, String department, String position) {
         this.id = new SimpleIntegerProperty(id);
         this.lastName = new SimpleStringProperty(lastName);

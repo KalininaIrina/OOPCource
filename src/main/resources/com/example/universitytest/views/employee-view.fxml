@@ -25,5 +25,6 @@
 
     <Button text="Добавить" onAction="#handleAddEmployee" />
     <Button text="Удалить" onAction="#handleDeleteEmployee" />
+    <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" />
 
 </VBox>

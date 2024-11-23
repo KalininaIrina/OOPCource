@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TextField?>
+
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.SalaryController">
+
+    <MenuBar>
+        <Menu text="Файл">
+            <MenuItem text="Сохранить"/>
+            <MenuItem text="Выйти"/>
+        </Menu>
+        <Menu text="Помощь">
+            <MenuItem text="О программе"/>
+        </Menu>
+    </MenuBar>
+
+    <TableView fx:id="salaryTable">
+        <columns>
+            <TableColumn text="ID" fx:id="idColumn"/>
+            <TableColumn text="Имя" fx:id="nameColumn"/>
+            <TableColumn text="Зарплата" fx:id="salaryColumn"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10">
+        <Label text="Зарплата:"/>
+        <TextField fx:id="salaryField"/>
+        <Button text="Обновить" onAction="#handleUpdateSalary"/>
+    </HBox>
+
+    <Label fx:id="totalSalaryLabel" text="Общая зарплата: 0.0"/>
+
+</VBox>

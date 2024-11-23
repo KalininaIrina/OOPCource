@@ -44,13 +44,13 @@ public class SalaryCalculator {
     }
 
     // Метод для расчета надбавок (пример)
-    private double calculateAllowances() {
+    public double calculateAllowances() {
         // Здесь можно добавить логику расчета надбавок в зависимости от позиции и других факторов
         return employee.getBaseSalary() * 0.2; // Например, 20% надбавка
     }
 
     // Метод для расчета вычетов (пример)
-    private double calculateDeductions() {
+    public double calculateDeductions() {
         // Здесь можно добавить логику расчета вычетов (налоги, страховые взносы и т.д.)
         return employee.getBaseSalary() * 0.1; // Например, 10% вычеты
     }
