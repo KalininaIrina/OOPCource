@@ -2,6 +2,7 @@ package com.example.universitytest.controllers;
 
 import com.example.universitytest.models.Employee;
 import com.example.universitytest.services.EmployeeService;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -30,6 +31,8 @@ public class EmployeeController {
     @FXML
     private TableColumn<Employee, String> positionColumn;
     @FXML
+    private TableColumn<Employee, Double> baseSalaryColumn;
+    @FXML
     private TextField firstNameField;
     @FXML
     private TextField lastNameField;
@@ -37,6 +40,16 @@ public class EmployeeController {
     private TextField surnameField;
     @FXML
     private TextField departmentField;
+    @FXML
+    private TextField baseSalaryField;
+
+    // Новые поля
+    @FXML
+    private TextField yearsWorkedField;
+    @FXML
+    private TextField hoursWorkedField;
+    @FXML
+    private CheckBox academicDegreeCheck;
 
     private EmployeeService employeeService = new EmployeeService();
     private ObservableList<Employee> employeeList = FXCollections.observableArrayList();
@@ -49,14 +62,10 @@ public class EmployeeController {
         surnameColumn.setCellValueFactory(cellData -> cellData.getValue().surnameProperty());
         departmentColumn.setCellValueFactory(cellData -> cellData.getValue().departmentProperty());
         positionColumn.setCellValueFactory(cellData -> cellData.getValue().positionProperty());
+        baseSalaryColumn.setCellValueFactory(cellData -> cellData.getValue().baseSalaryProperty().asObject());
 
         employeeTable.setItems(employeeList);
-
-        // Предварительные данные для тестирования
-        //employeeList.add(new Employee(1, "Иван", "Иванов", "Физика", "Преподаватель"));
-        //employeeList.add(new Employee(2, "Анна", "Петрова", "Химия", "Доцент"));
     }
-
 
     @FXML
     private TextField positionField;
@@ -65,25 +74,61 @@ public class EmployeeController {
     private void handleAddEmployee() {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
-        String surname = surnameField.getText(); // Получение фамилии
+        String surname = surnameField.getText();
         String department = departmentField.getText();
         String position = positionField.getText();
+        String baseSalaryText = baseSalaryField.getText();
 
-        if (!firstName.isEmpty() && !lastName.isEmpty() && !surname.isEmpty() && !department.isEmpty() && !position.isEmpty()) {
-            Employee newEmployee = new Employee(employeeList.size() + 1, firstName, lastName, surname, department, position);
-            employeeService.addEmployee(newEmployee);
-            employeeList.add(newEmployee);
+        // Новые поля
+        String yearsWorkedText = yearsWorkedField.getText();
+        String hoursWorkedText = hoursWorkedField.getText();
+        boolean hasAcademicDegree = academicDegreeCheck.isSelected();
 
-            firstNameField.clear();
-            lastNameField.clear();
-            surnameField.clear(); // Очистка поля фамилии
-            departmentField.clear();
-            positionField.clear();
+        if (!firstName.isEmpty() && !lastName.isEmpty() && !surname.isEmpty() && !department.isEmpty() && !position.isEmpty() && !baseSalaryText.isEmpty()) {
+            try {
+                // Преобразуем строку оклада в double
+                double baseSalary = Double.parseDouble(baseSalaryText);
+
+                // Преобразуем стаж и количество часов в числа
+                int yearsWorked = Integer.parseInt(yearsWorkedText);
+                int hoursWorked = Integer.parseInt(hoursWorkedText);
+
+                // Создаем нового сотрудника с дополнительными параметрами
+                Employee newEmployee = new Employee(
+                        employeeList.size() + 1, // ID будет автоматически увеличиваться
+                        firstName,
+                        lastName,
+                        surname,
+                        department,
+                        position,
+                        baseSalary,
+                        yearsWorked,
+                        hasAcademicDegree,
+                        hoursWorked
+                );
+
+                // Добавляем сотрудника в сервис и в список
+                employeeService.addEmployee(newEmployee);
+                employeeList.add(newEmployee);
+
+                // Очистка всех полей
+                firstNameField.clear();
+                lastNameField.clear();
+                surnameField.clear();
+                departmentField.clear();
+                positionField.clear();
+                baseSalaryField.clear();
+                yearsWorkedField.clear();
+                hoursWorkedField.clear();
+                academicDegreeCheck.setSelected(false);
+
+            } catch (NumberFormatException e) {
+                showAlert("Ошибка", "Все числовые поля должны содержать валидные значения.");
+            }
         } else {
             showAlert("Ошибка", "Пожалуйста, заполните все поля");
         }
     }
-
 
     @FXML
     private void handleDeleteEmployee() {
@@ -105,9 +150,27 @@ public class EmployeeController {
 
     @FXML
     private void handleOpenSalaryView(ActionEvent event) throws IOException {
-        // Вызываем метод для отображения окна калькулятора зарплаты
-        Main main = new Main();
-        main.showSalaryView();
+        // Получаем выбранного сотрудника
+        Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
+
+        if (selectedEmployee != null) {
+            // Загружаем FXML файл для калькулятора зарплаты
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitytest/views/salary-view.fxml"));
+            Stage stage = new Stage();
+            Scene scene = new Scene(loader.load());
+
+            // Получаем контроллер и передаем выбранного сотрудника
+            SalaryController salaryController = loader.getController();
+            salaryController.initialize(selectedEmployee); // Передаем сотрудника в новый контроллер
+
+            // Отображаем новое окно
+            stage.setTitle("Калькулятор зарплаты");
+            stage.setScene(scene);
+            stage.show();
+        } else {
+            showAlert("Ошибка", "Пожалуйста, выберите сотрудника для расчета зарплаты.");
+        }
     }
+
 
 }

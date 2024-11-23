@@ -1,95 +1,92 @@
 package com.example.universitytest.controllers;
 
 import com.example.universitytest.models.Employee;
-import com.example.universitytest.services.EmployeeService;
+import com.example.universitytest.services.SalaryCalculator;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import com.example.universitytest.Main;
-import javafx.event.ActionEvent;
 import javafx.stage.Stage;
-
-import java.io.IOException;
+import javafx.scene.text.Text;
 
 public class SalaryController {
-    @FXML
-    private TableView<Employee> salaryTable;
 
     @FXML
-    private TableColumn<Employee, Integer> idColumn;
+    private Text employeeNameText;
+    @FXML
+    private Text positionText;
+    @FXML
+    private Text baseSalaryText;
+    @FXML
+    private Text yearsWorkedText;
+    @FXML
+    private Text academicDegreeText;
 
     @FXML
-    private TableColumn<Employee, String> nameColumn;
+    private TextField hoursWorkedField;
+    @FXML
+    private TextField bonusField;
 
     @FXML
-    private TableColumn<Employee, Double> salaryColumn;
-
-    @FXML
-    private TextField salaryField;
+    private CheckBox applyAcademicDegreeCheck;
 
     @FXML
     private Label totalSalaryLabel;
 
-    private ObservableList<Employee> employees = FXCollections.observableArrayList();
+    private Employee currentEmployee;
+    private SalaryCalculator salaryCalculator;
 
-    // Этот метод вызывается после загрузки FXML
-    @FXML
-    private void initialize() {
-        // Привязываем столбцы таблицы к свойствам модели Employee
-        idColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
-        nameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-        salaryColumn.setCellValueFactory(cellData -> cellData.getValue().baseSalaryProperty().asObject());
+    public void initialize(Employee employee) {
+        this.currentEmployee = employee;
+        this.salaryCalculator = new SalaryCalculator(currentEmployee);
 
-        // Добавляем тестовые данные
-        employees.addAll(
-                new Employee(1, "Иван", "Иванов", "Петрович", "IT", "Разработчик"),
-                new Employee(2, "Мария", "Сидорова", "Васильевна", "HR", "Менеджер")
-        );
-        employees.get(0).setBaseSalary(50000);
-        employees.get(1).setBaseSalary(60000);
-
-        salaryTable.setItems(employees);
-        updateTotalSalary();
+        // Заполняем информацию о сотруднике
+        employeeNameText.setText(currentEmployee.getFirstName() + " " + currentEmployee.getLastName());
+        positionText.setText("Должность: " + currentEmployee.getPosition());
+        baseSalaryText.setText("Оклад: " + currentEmployee.getBaseSalary());
+        yearsWorkedText.setText("Стаж: " + currentEmployee.getYearsWorked() + " лет");
+        academicDegreeText.setText("Учёная степень: " + (currentEmployee.hasAcademicDegree() ? "Да" : "Нет"));
     }
 
     @FXML
-    private void handleUpdateSalary() {
-        Employee selectedEmployee = salaryTable.getSelectionModel().getSelectedItem();
-        if (selectedEmployee != null) {
-            try {
-                double newSalary = Double.parseDouble(salaryField.getText());
-                selectedEmployee.setBaseSalary(newSalary);
-                salaryTable.refresh();
-                updateTotalSalary();
-            } catch (NumberFormatException e) {
-                showAlert("Ошибка", "Введите корректное значение зарплаты!");
+    private void handleCalculateSalary() {
+        try {
+            // Проверяем, что поля для ввода не пустые
+            if (hoursWorkedField.getText().isEmpty() || bonusField.getText().isEmpty()) {
+                showAlert("Ошибка", "Пожалуйста, заполните все поля.");
+                return;
             }
-        } else {
-            showAlert("Ошибка", "Выберите сотрудника для обновления зарплаты.");
+
+            // Преобразуем строки в числовые значения
+            double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
+            double bonusPercent = Double.parseDouble(bonusField.getText());
+
+            // Рассчитываем итоговую зарплату
+            double calculatedSalary = salaryCalculator.calculateNetSalary(); // Рассчитаем начальную зарплату
+            double bonus = (bonusPercent / 100) * calculatedSalary; // Рассчитываем бонус
+            calculatedSalary += bonus; // Добавляем бонус
+
+            // Если выбран флажок для ученой степени, применяем 10% увеличение
+            if (applyAcademicDegreeCheck.isSelected()) {
+                calculatedSalary += calculatedSalary * 0.1; // 10% добавка за ученую степень
+            }
+
+            // Отображаем итоговую зарплату
+            totalSalaryLabel.setText("Итоговая зарплата: " + calculatedSalary);
+
+        } catch (NumberFormatException e) {
+            showAlert("Ошибка", "Введите корректные данные для расчета.");
         }
     }
 
-    private void updateTotalSalary() {
-        double total = employees.stream().mapToDouble(Employee::getBaseSalary).sum();
-        totalSalaryLabel.setText("Общая зарплата: " + total);
-    }
-
-    private void showAlert(String title, String message) {
+    private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(content);
         alert.showAndWait();
     }
 
     @FXML
-    private void handleOpenSalaryView(ActionEvent event) throws IOException {
-        // Вызываем метод для отображения окна калькулятора зарплаты
-        Main main = new Main();
-        main.showSalaryView();
+    private void handleCloseSalaryView() {
+        Stage stage = (Stage) totalSalaryLabel.getScene().getWindow();
+        stage.close();
     }
-
 }

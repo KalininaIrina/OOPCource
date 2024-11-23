@@ -1,9 +1,10 @@
 package com.example.universitytest.services;
+
 import com.example.universitytest.models.Employee;
 
 public class SalaryCalculator {
     private Employee employee; //ссылка на сотрудника, для которого ведется расчет.
-    private double totalSalary; //итоговая зарплата после расчетов
+    private double totalSalary; // итоговая зарплата после расчетов
 
     public SalaryCalculator() {
     }
@@ -43,16 +44,39 @@ public class SalaryCalculator {
         return totalSalary;
     }
 
-    // Метод для расчета надбавок (пример)
+    // Метод для расчета надбавок
     public double calculateAllowances() {
-        // Здесь можно добавить логику расчета надбавок в зависимости от позиции и других факторов
-        return employee.getBaseSalary() * 0.2; // Например, 20% надбавка
+        double baseSalary = employee.getBaseSalary();
+        double allowances = 0;
+
+        // Надбавка за стаж: 1% за каждый год работы
+        int yearsWorked = employee.getYearsWorked();
+        allowances += baseSalary * 0.01 * yearsWorked;
+
+        // Надбавка за ученую степень
+        if (employee.hasAcademicDegree()) {
+            allowances += baseSalary * 0.10; // 10% за ученую степень
+        }
+
+        // Надбавка за количество часов (если это преподаватель)
+        if (employee.getPosition().equalsIgnoreCase("Преподаватель") && employee.getHoursWorked() > 0) {
+            allowances += employee.getHoursWorked() * 1000; // 1000 рублей за каждый рабочий час
+        }
+
+        return allowances;
     }
 
-    // Метод для расчета вычетов (пример)
+    // Метод для расчета вычетов
     public double calculateDeductions() {
-        // Здесь можно добавить логику расчета вычетов (налоги, страховые взносы и т.д.)
-        return employee.getBaseSalary() * 0.1; // Например, 10% вычеты
+        double baseSalary = employee.getBaseSalary();
+
+        // Пример вычета налога на доходы физических лиц (НДФЛ): 13% от общей зарплаты
+        double tax = baseSalary * 0.13;
+
+        // Пример других вычетов (например, пенсионных взносов и страховых взносов)
+        double otherDeductions = baseSalary * 0.05; // Допустим, 5% других вычетов
+
+        return tax + otherDeductions;
     }
 
     // Метод для создания отчета по зарплате
@@ -65,9 +89,11 @@ public class SalaryCalculator {
         report.append("Отчет по заработной плате для сотрудника: ").append(employee.getFirstName()).append(" ").append(employee.getLastName()).append("\n")
                 .append("Должность: ").append(employee.getPosition()).append("\n")
                 .append("Оклад: ").append(employee.getBaseSalary()).append("\n")
-                .append("Надбавки: ").append(calculateAllowances()).append("\n")
-                .append("Вычеты: ").append(calculateDeductions()).append("\n")
-                .append("Итоговая сумма заработной платы: ").append(calculateNetSalary()).append("\n");
+                .append("Надбавка за стаж: ").append(calculateAllowances() * 0.01 * employee.getYearsWorked()).append("\n")
+                .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? employee.getBaseSalary() * 0.10 : 0).append("\n")
+                .append("Надбавка за количество часов: ").append(employee.getPosition().equalsIgnoreCase("Преподаватель") ? employee.getHoursWorked() * 1000 : 0).append("\n")
+                .append("Вычеты (налог + другие): ").append(calculateDeductions()).append("\n")
+                .append("Итоговая сумма заработной платы (чистая): ").append(calculateNetSalary()).append("\n");
 
         return report.toString();
     }

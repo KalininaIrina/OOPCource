@@ -4,8 +4,11 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
 
 <VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.EmployeeController">
+    <!-- Таблица для отображения сотрудников -->
     <TableView fx:id="employeeTable">
         <columns>
             <TableColumn fx:id="idColumn" text="ID" />
@@ -14,17 +17,25 @@
             <TableColumn fx:id="surnameColumn" text="Отчество" />
             <TableColumn fx:id="departmentColumn" text="Отдел" />
             <TableColumn fx:id="positionColumn" text="Должность" />
+            <TableColumn fx:id="baseSalaryColumn" text="Оклад" />
         </columns>
     </TableView>
 
-    <TextField fx:id="lastNameField" promptText="Фамилия"/>
+    <!-- Поля для ввода данных о сотруднике -->
+    <TextField fx:id="lastNameField" promptText="Фамилия" />
     <TextField fx:id="firstNameField" promptText="Имя" />
-    <TextField fx:id="surnameField" promptText="Отчество"/>
-    <TextField fx:id="departmentField" promptText="Отдел"/>
-    <TextField fx:id="positionField" promptText="Должность"/>
+    <TextField fx:id="surnameField" promptText="Отчество" />
+    <TextField fx:id="departmentField" promptText="Отдел" />
+    <TextField fx:id="positionField" promptText="Должность" />
+    <TextField fx:id="baseSalaryField" promptText="Оклад" />
 
+    <!-- Новые поля для расчета зарплаты -->
+    <TextField fx:id="yearsWorkedField" promptText="Стаж работы (лет)" />
+    <TextField fx:id="hoursWorkedField" promptText="Часы, отработанные преподавателем" />
+    <CheckBox fx:id="academicDegreeCheck" text="Наличие ученой степени" />
+
+    <!-- Кнопки для действий -->
     <Button text="Добавить" onAction="#handleAddEmployee" />
     <Button text="Удалить" onAction="#handleDeleteEmployee" />
     <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" />
-
 </VBox>

@@ -1,42 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TextField?>
-
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.Menu?>
-
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
-<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.SalaryController">
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.text.Text?>
 
-    <MenuBar>
-        <Menu text="Файл">
-            <MenuItem text="Сохранить"/>
-            <MenuItem text="Выйти"/>
-        </Menu>
-        <Menu text="Помощь">
-            <MenuItem text="О программе"/>
-        </Menu>
-    </MenuBar>
+<VBox spacing="15" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.SalaryController">
 
-    <TableView fx:id="salaryTable">
-        <columns>
-            <TableColumn text="ID" fx:id="idColumn"/>
-            <TableColumn text="Имя" fx:id="nameColumn"/>
-            <TableColumn text="Зарплата" fx:id="salaryColumn"/>
-        </columns>
-    </TableView>
+    <Text fx:id="employeeNameText" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    <Text fx:id="positionText"/>
+    <Text fx:id="baseSalaryText"/>
+    <Text fx:id="yearsWorkedText"/>
+    <Text fx:id="academicDegreeText"/>
 
-    <HBox spacing="10">
-        <Label text="Зарплата:"/>
-        <TextField fx:id="salaryField"/>
-        <Button text="Обновить" onAction="#handleUpdateSalary"/>
-    </HBox>
+    <Label text="Ввод данных для расчета: "/>
+    <TextField fx:id="hoursWorkedField" promptText="Часы работы"/>
+    <TextField fx:id="bonusField" promptText="Бонус (в %)"/>
 
-    <Label fx:id="totalSalaryLabel" text="Общая зарплата: 0.0"/>
+    <CheckBox fx:id="applyAcademicDegreeCheck" text="Применить увеличение из-за ученой степени"/>
 
+    <Button text="Рассчитать" onAction="#handleCalculateSalary"/>
+    <Label fx:id="totalSalaryLabel" text="Итоговая зарплата: "/>
+
+    <Button text="Закрыть" onAction="#handleCloseSalaryView" />
 </VBox>
