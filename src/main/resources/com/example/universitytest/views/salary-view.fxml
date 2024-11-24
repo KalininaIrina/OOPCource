@@ -23,5 +23,7 @@
     <Button text="Рассчитать" onAction="#handleCalculateSalary"/>
     <Label fx:id="totalSalaryLabel" text="Итоговая зарплата: "/>
 
+    <Button fx:id="generateReportButton" text="Сохранить отчет" onAction="#handleGenerateReport" />
+
     <Button text="Закрыть" onAction="#handleCloseSalaryView" />
 </VBox>

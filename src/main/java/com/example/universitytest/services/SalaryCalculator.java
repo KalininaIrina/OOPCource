@@ -3,6 +3,8 @@ package com.example.universitytest.services;
 import com.example.universitytest.models.Employee;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class SalaryCalculator {
     private Employee employee; //ссылка на сотрудника, для которого ведется расчет.
@@ -109,22 +111,30 @@ public class SalaryCalculator {
             allowances += hourlyBonus;
         }
 
-        double netSalary = baseSalary + allowances - deductions;
+        // Округление значений до двух знаков
+        BigDecimal roundedBaseSalary = new BigDecimal(baseSalary).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal roundedAllowances = new BigDecimal(allowances).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal roundedDeductions = new BigDecimal(deductions).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal roundedHourlyBonus = new BigDecimal(hourlyBonus).setScale(2, RoundingMode.HALF_UP);
 
-        // Округление итоговой зарплаты
-        BigDecimal roundedNetSalary = new BigDecimal(netSalary).setScale(2, RoundingMode.HALF_UP);
+        // Рассчитываем чистую зарплату и округляем ее
+        BigDecimal netSalary = roundedBaseSalary.add(roundedAllowances).subtract(roundedDeductions);
+        BigDecimal roundedNetSalary = netSalary.setScale(2, RoundingMode.HALF_UP);
 
-        report.append("Отчет по заработной плате для сотрудника: ").append(employee.getFirstName()).append(" ").append(employee.getLastName()).append("\n")
+        // Формируем отчет
+        report.append("Отчет по заработной плате для сотрудника: ")
+                .append(employee.getLastName()).append(" ").append(employee.getFirstName()).append(" ").append(employee.getSurname()).append("\n")
                 .append("Должность: ").append(employee.getPosition()).append("\n")
-                .append("Оклад: ").append(baseSalary).append("\n")
-                .append("Надбавка за стаж: ").append(baseSalary * 0.01 * employee.getYearsWorked()).append("\n")
-                .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? baseSalary * 0.10 : 0).append("\n")
-                .append("Надбавка за количество часов: ").append(hourlyBonus).append("\n")
-                .append("Вычеты (налог + другие): ").append(deductions).append("\n")
+                .append("Оклад: ").append(roundedBaseSalary).append("\n")
+                .append("Надбавка за стаж: ").append(new BigDecimal(baseSalary * 0.01 * employee.getYearsWorked()).setScale(2, RoundingMode.HALF_UP)).append("\n")
+                .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? new BigDecimal(baseSalary * 0.10).setScale(2, RoundingMode.HALF_UP) : "0.00").append("\n")
+                .append("Надбавка за количество часов: ").append(roundedHourlyBonus).append("\n")
+                .append("Вычеты (налог + другие): ").append(roundedDeductions).append("\n")
                 .append("Итоговая сумма заработной платы (чистая): ").append(roundedNetSalary).append("\n");
 
         return report.toString();
     }
+
 
 
 }

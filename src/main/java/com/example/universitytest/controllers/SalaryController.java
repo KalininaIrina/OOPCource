@@ -7,8 +7,18 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.text.Text;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.scene.control.Alert;
+
 public class SalaryController {
 
+    @FXML
+    public Button generateReportButton;
     @FXML
     private Text employeeNameText;
     @FXML
@@ -84,10 +94,33 @@ public class SalaryController {
     @FXML
     private void handleGenerateReport() {
         try {
+            // Проверяем, что поле для ввода часов не пустое
+            if (hoursWorkedField.getText().isEmpty()) {
+                showAlert("Ошибка", "Пожалуйста, введите количество отработанных часов.");
+                return;
+            }
+
+            // Преобразуем строку в число
             double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
+
+            // Генерируем отчет
             String report = salaryCalculator.generateReport(hoursWorked);
-            // Показываем отчет (например, в диалоге или выводим в консоль)
-            System.out.println(report);
+
+            // Открываем диалог для выбора пути сохранения файла
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+            fileChooser.setInitialFileName("salary_report.txt");
+            File file = fileChooser.showSaveDialog(null);
+
+            if (file != null) {
+                // Сохраняем отчет в выбранный файл
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                    writer.write(report);
+                    showAlert("Успех", "Отчет успешно сохранен!");
+                } catch (IOException e) {
+                    showAlert("Ошибка", "Ошибка при сохранении отчета.");
+                }
+            }
 
         } catch (NumberFormatException e) {
             showAlert("Ошибка", "Введите корректное количество часов.");
