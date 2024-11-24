@@ -1,0 +1,69 @@
+/* Стили для кнопок */
+/*.button {
+
+    -fx-background-color: #3a3a3a;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+}*/
+
+/* Стили для кнопок */
+.button {
+    -fx-background-color: #ffccd5; /* Нежно-розовый цвет */
+    -fx-text-fill: #000000; /* Черный текст */
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #ff99ac; /* Цвет границы немного темнее */
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 5, 0, 0, 5);
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-opacity: 0.9;
+    -fx-border-width: 1px 3px 1px 1px;
+}
+
+.button:pressed {
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.7), 7, 0, 0, 2);
+}
+
+/* Стили для текстовых полей */
+.text-field {
+    -fx-border-color: #3a3a3a;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+}
+
+/* Стили для таблицы */
+.table-view {
+    -fx-background-color: #f0f0f0;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-view .cell {
+    -fx-background-color: #ffffff; /* Белый фон */
+    -fx-text-fill: #000000; /* Черный текст */
+}
+
+.table-column-header {
+    -fx-background-color: #f7f7e4;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+}
+
+/* Стили для VBox */
+.v-box {
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+    -fx-background-color: #f0e6f6; /* Лавандовый цвет для фона */
+}
+
+/* Стили для корневого контейнера */
+.root {
+    -fx-background-color: #f0e6f6; /* Лавандовый цвет для фона */
+}
+
