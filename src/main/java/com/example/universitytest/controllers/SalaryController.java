@@ -39,11 +39,11 @@ public class SalaryController {
         this.salaryCalculator = new SalaryCalculator(currentEmployee);
 
         // Заполняем информацию о сотруднике
-        employeeNameText.setText(currentEmployee.getFirstName() + " " + currentEmployee.getLastName());
+        employeeNameText.setText(currentEmployee.getLastName() + " " + currentEmployee.getFirstName() + " " + currentEmployee.getSurname());
         positionText.setText("Должность: " + currentEmployee.getPosition());
         baseSalaryText.setText("Оклад: " + currentEmployee.getBaseSalary());
         yearsWorkedText.setText("Стаж: " + currentEmployee.getYearsWorked() + " лет");
-        academicDegreeText.setText("Учёная степень: " + (currentEmployee.hasAcademicDegree() ? "Да" : "Нет"));
+        academicDegreeText.setText("Учёная степень: " + (currentEmployee.hasAcademicDegree() ? "Есть" : "Нет"));
     }
 
     @FXML
@@ -69,6 +69,9 @@ public class SalaryController {
                 calculatedSalary += calculatedSalary * 0.1; // 10% добавка за ученую степень
             }
 
+            // Округляем итоговую зарплату до двух знаков
+            calculatedSalary = Math.round(calculatedSalary * 100.0) / 100.0;
+
             // Отображаем итоговую зарплату
             totalSalaryLabel.setText("Итоговая зарплата: " + calculatedSalary);
 
@@ -76,6 +79,21 @@ public class SalaryController {
             showAlert("Ошибка", "Введите корректные данные для расчета.");
         }
     }
+
+
+    @FXML
+    private void handleGenerateReport() {
+        try {
+            double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
+            String report = salaryCalculator.generateReport(hoursWorked);
+            // Показываем отчет (например, в диалоге или выводим в консоль)
+            System.out.println(report);
+
+        } catch (NumberFormatException e) {
+            showAlert("Ошибка", "Введите корректное количество часов.");
+        }
+    }
+
 
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -1,6 +1,8 @@
 package com.example.universitytest.services;
 
 import com.example.universitytest.models.Employee;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class SalaryCalculator {
     private Employee employee; //ссылка на сотрудника, для которого ведется расчет.
@@ -40,9 +42,19 @@ public class SalaryCalculator {
         double allowances = calculateAllowances();
         double deductions = calculateDeductions();
 
+        // Рассчитываем итоговую зарплату
         totalSalary = baseSalary + allowances - deductions;
+
+        // Округляем итоговую зарплату
+        BigDecimal roundedSalary = new BigDecimal(totalSalary).setScale(2, RoundingMode.HALF_UP);
+
+        // Обновляем totalSalary округленным значением
+        totalSalary = roundedSalary.doubleValue();
+
         return totalSalary;
     }
+
+
 
     // Метод для расчета надбавок
     public double calculateAllowances() {
@@ -59,9 +71,9 @@ public class SalaryCalculator {
         }
 
         // Надбавка за количество часов (если это преподаватель)
-        if (employee.getPosition().equalsIgnoreCase("Преподаватель") && employee.getHoursWorked() > 0) {
+        /*if (employee.getPosition().equalsIgnoreCase("Преподаватель") && employee.getHoursWorked() > 0) {
             allowances += employee.getHoursWorked() * 1000; // 1000 рублей за каждый рабочий час
-        }
+        }*/
 
         return allowances;
     }
@@ -80,21 +92,39 @@ public class SalaryCalculator {
     }
 
     // Метод для создания отчета по зарплате
-    public String generateReport() {
+    public String generateReport(double hoursWorked) {
         if (employee == null) {
             throw new IllegalStateException("Сотрудник не существует");
         }
 
         StringBuilder report = new StringBuilder();
+        double baseSalary = employee.getBaseSalary();
+        double allowances = calculateAllowances();
+        double deductions = calculateDeductions();
+        double hourlyBonus = 0;
+
+        // Если сотрудник преподаватель, добавляем надбавку за часы
+        if (employee.getPosition().equalsIgnoreCase("Преподаватель") && hoursWorked > 0) {
+            hourlyBonus = hoursWorked * 1000; // 1000 рублей за час
+            allowances += hourlyBonus;
+        }
+
+        double netSalary = baseSalary + allowances - deductions;
+
+        // Округление итоговой зарплаты
+        BigDecimal roundedNetSalary = new BigDecimal(netSalary).setScale(2, RoundingMode.HALF_UP);
+
         report.append("Отчет по заработной плате для сотрудника: ").append(employee.getFirstName()).append(" ").append(employee.getLastName()).append("\n")
                 .append("Должность: ").append(employee.getPosition()).append("\n")
-                .append("Оклад: ").append(employee.getBaseSalary()).append("\n")
-                .append("Надбавка за стаж: ").append(calculateAllowances() * 0.01 * employee.getYearsWorked()).append("\n")
-                .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? employee.getBaseSalary() * 0.10 : 0).append("\n")
-                .append("Надбавка за количество часов: ").append(employee.getPosition().equalsIgnoreCase("Преподаватель") ? employee.getHoursWorked() * 1000 : 0).append("\n")
-                .append("Вычеты (налог + другие): ").append(calculateDeductions()).append("\n")
-                .append("Итоговая сумма заработной платы (чистая): ").append(calculateNetSalary()).append("\n");
+                .append("Оклад: ").append(baseSalary).append("\n")
+                .append("Надбавка за стаж: ").append(baseSalary * 0.01 * employee.getYearsWorked()).append("\n")
+                .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? baseSalary * 0.10 : 0).append("\n")
+                .append("Надбавка за количество часов: ").append(hourlyBonus).append("\n")
+                .append("Вычеты (налог + другие): ").append(deductions).append("\n")
+                .append("Итоговая сумма заработной платы (чистая): ").append(roundedNetSalary).append("\n");
 
         return report.toString();
     }
+
+
 }

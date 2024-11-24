@@ -15,10 +15,10 @@ public class Employee {
     private SimpleDoubleProperty baseSalary;
     private SimpleIntegerProperty yearsWorked; // Стаж
     private SimpleBooleanProperty hasAcademicDegree; // Ученая степень
-    private SimpleIntegerProperty hoursWorked; // Часы работы
+    //private SimpleIntegerProperty hoursWorked; // Часы работы
 
     public Employee(int id, String firstName, String lastName, String surname, String department, String position,
-                    double baseSalary, int yearsWorked, boolean hasAcademicDegree, int hoursWorked) {
+                    double baseSalary, int yearsWorked, boolean hasAcademicDegree) {
         this.id = new SimpleIntegerProperty(id);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
@@ -28,7 +28,7 @@ public class Employee {
         this.baseSalary = new SimpleDoubleProperty(baseSalary);
         this.yearsWorked = new SimpleIntegerProperty(yearsWorked);
         this.hasAcademicDegree = new SimpleBooleanProperty(hasAcademicDegree);
-        this.hoursWorked = new SimpleIntegerProperty(hoursWorked); // Инициализация поля для часов работы
+        //this.hoursWorked = new SimpleIntegerProperty(hoursWorked); // Инициализация поля для часов работы
     }
 
     // Методы доступа для привязки данных (getters и setters)
@@ -142,15 +142,15 @@ public class Employee {
     }
 
     // Методы для работы с часами работы
-    public int getHoursWorked() {
+    /*public int getHoursWorked() {
         return hoursWorked.get();
-    }
+    }*/
 
-    public void setHoursWorked(int hoursWorked) {
+    /*public void setHoursWorked(int hoursWorked) {
         this.hoursWorked.set(hoursWorked);
     }
 
     public SimpleIntegerProperty hoursWorkedProperty() {
         return hoursWorked;
-    }
+    }*/
 }

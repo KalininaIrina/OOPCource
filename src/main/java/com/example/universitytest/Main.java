@@ -19,7 +19,7 @@ public class Main extends Application {
     // Метод для отображения окна управления сотрудниками
     public void showEmployeeView() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("views/employee-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         primaryStage.setTitle("Управление сотрудниками");
         primaryStage.setScene(scene);
         primaryStage.show();

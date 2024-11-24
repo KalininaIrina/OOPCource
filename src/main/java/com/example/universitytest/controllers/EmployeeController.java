@@ -46,8 +46,8 @@ public class EmployeeController {
     // Новые поля
     @FXML
     private TextField yearsWorkedField;
-    @FXML
-    private TextField hoursWorkedField;
+    //@FXML
+    //private TextField hoursWorkedField;
     @FXML
     private CheckBox academicDegreeCheck;
 
@@ -81,7 +81,7 @@ public class EmployeeController {
 
         // Новые поля
         String yearsWorkedText = yearsWorkedField.getText();
-        String hoursWorkedText = hoursWorkedField.getText();
+        //String hoursWorkedText = hoursWorkedField.getText();
         boolean hasAcademicDegree = academicDegreeCheck.isSelected();
 
         if (!firstName.isEmpty() && !lastName.isEmpty() && !surname.isEmpty() && !department.isEmpty() && !position.isEmpty() && !baseSalaryText.isEmpty()) {
@@ -91,7 +91,7 @@ public class EmployeeController {
 
                 // Преобразуем стаж и количество часов в числа
                 int yearsWorked = Integer.parseInt(yearsWorkedText);
-                int hoursWorked = Integer.parseInt(hoursWorkedText);
+                //int hoursWorked = Integer.parseInt(hoursWorkedText);
 
                 // Создаем нового сотрудника с дополнительными параметрами
                 Employee newEmployee = new Employee(
@@ -103,8 +103,8 @@ public class EmployeeController {
                         position,
                         baseSalary,
                         yearsWorked,
-                        hasAcademicDegree,
-                        hoursWorked
+                        hasAcademicDegree
+                        //hoursWorked
                 );
 
                 // Добавляем сотрудника в сервис и в список
@@ -119,7 +119,7 @@ public class EmployeeController {
                 positionField.clear();
                 baseSalaryField.clear();
                 yearsWorkedField.clear();
-                hoursWorkedField.clear();
+                //hoursWorkedField.clear();
                 academicDegreeCheck.setSelected(false);
 
             } catch (NumberFormatException e) {
@@ -163,6 +163,10 @@ public class EmployeeController {
             SalaryController salaryController = loader.getController();
             salaryController.initialize(selectedEmployee); // Передаем сотрудника в новый контроллер
 
+            // Устанавливаем размеры окна (ширина и высота)
+            stage.setWidth(400); // Ширина окна
+            stage.setHeight(600); // Высота окна
+
             // Отображаем новое окно
             stage.setTitle("Калькулятор зарплаты");
             stage.setScene(scene);
@@ -171,6 +175,7 @@ public class EmployeeController {
             showAlert("Ошибка", "Пожалуйста, выберите сотрудника для расчета зарплаты.");
         }
     }
+
 
 
 }
