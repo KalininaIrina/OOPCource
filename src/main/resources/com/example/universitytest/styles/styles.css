@@ -50,7 +50,7 @@
 }
 
 .table-column-header {
-    -fx-background-color: #f7f7e4;
+    -fx-background-color: #ffccd5;
     -fx-text-fill: #ffffff;
     -fx-font-size: 14px;
 }
@@ -59,11 +59,11 @@
 .v-box {
     -fx-padding: 20px;
     -fx-spacing: 10px;
-    -fx-background-color: #f0e6f6; /* Лавандовый цвет для фона */
+    -fx-background-color: #f0e6f6;
 }
 
 /* Стили для корневого контейнера */
 .root {
-    -fx-background-color: #f0e6f6; /* Лавандовый цвет для фона */
+    -fx-background-color: #f0e6f6;
 }
 
