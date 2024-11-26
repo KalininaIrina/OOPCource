@@ -1,5 +1,6 @@
 package com.example.universitytest.controllers;
 
+import com.example.universitytest.database.DatabaseConnection;
 import com.example.universitytest.models.Employee;
 import com.example.universitytest.services.EmployeeService;
 import com.example.universitytest.services.SalaryCalculator;
@@ -12,6 +13,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
+
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
@@ -49,6 +52,11 @@ public class SalaryController {
     public void initialize(Employee employee) {
         this.currentEmployee = employee;
         this.salaryCalculator = new SalaryCalculator(currentEmployee);
+        try {
+            this.employeeService = new EmployeeService(DatabaseConnection.getConnection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         // Получаем название должности через EmployeeService
         String positionName = employeeService.getPositionById(currentEmployee.getPositionId());
