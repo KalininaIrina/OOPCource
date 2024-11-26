@@ -3,6 +3,7 @@ package com.example.universitytest.controllers;
 import com.example.universitytest.models.Employee;
 import com.example.universitytest.services.EmployeeService;
 import com.example.universitytest.database.DatabaseConnection;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -51,6 +52,8 @@ public class EmployeeController {
     //private TextField hoursWorkedField;
     @FXML
     private CheckBox academicDegreeCheck;
+    @FXML
+    private ComboBox<String> positionComboBox;  // ComboBox для должностей
 
     private Connection connection;
 
@@ -71,7 +74,13 @@ public class EmployeeController {
         firstNameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
         lastNameColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
         surnameColumn.setCellValueFactory(cellData -> cellData.getValue().surnameProperty());
-        positionColumn.setCellValueFactory(cellData -> cellData.getValue().positionIdProperty().asObject().asString()); // Отображаем position_id
+
+        // Получаем все должности из базы данных
+        ObservableList<String> positionList = FXCollections.observableArrayList(employeeService.getAllPositions());
+        positionComboBox.setItems(positionList); // Устанавливаем должности в ComboBox
+        positionColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(employeeService.getPositionById(cellData.getValue().getPositionId())));
+
         baseSalaryColumn.setCellValueFactory(cellData -> cellData.getValue().baseSalaryProperty().asObject());
 
         // Заполняем список сотрудников из базы данных
@@ -80,62 +89,55 @@ public class EmployeeController {
     }
 
 
-
     @FXML
     private TextField positionField;
 
     @FXML
     private void handleAddEmployee() {
-        String firstName = firstNameField.getText();
-        String lastName = lastNameField.getText();
-        String surname = surnameField.getText();
-        String positionIdText = positionField.getText();
-        String baseSalaryText = baseSalaryField.getText();
+        // Получаем выбранную должность из ComboBox
+        String selectedPosition = positionComboBox.getSelectionModel().getSelectedItem();
+        if (selectedPosition != null) {
+            // Преобразуем название должности в ID
+            int positionId = employeeService.getPositionIdByName(selectedPosition);
 
-        // Новые поля
-        String yearsWorkedText = yearsWorkedField.getText();
-        boolean hasAcademicDegree = academicDegreeCheck.isSelected();
+            // Преобразуем другие значения
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String surname = surnameField.getText();
+            double baseSalary = Double.parseDouble(baseSalaryField.getText());
+            int yearsWorked = Integer.parseInt(yearsWorkedField.getText());
+            boolean hasAcademicDegree = academicDegreeCheck.isSelected();
 
-        if (!firstName.isEmpty() && !lastName.isEmpty() && !surname.isEmpty() && !positionIdText.isEmpty() && !baseSalaryText.isEmpty() && !yearsWorkedText.isEmpty()) {
-            try {
-                // Преобразуем строковые данные в числа
-                int positionId = Integer.parseInt(positionIdText);
-                double baseSalary = Double.parseDouble(baseSalaryText);
-                int yearsWorked = Integer.parseInt(yearsWorkedText);
+            // Создаем нового сотрудника без ID (оно будет назначено в базе данных)
+            Employee newEmployee = new Employee(
+                    firstName,
+                    lastName,
+                    surname,
+                    positionId,
+                    baseSalary,
+                    yearsWorked,
+                    hasAcademicDegree
+            );
 
-                // Создаем нового сотрудника
-                Employee newEmployee = new Employee(
-                        employeeList.size() + 1, // ID автоматически увеличивается
-                        firstName,
-                        lastName,
-                        surname,
-                        positionId,
-                        baseSalary,
-                        yearsWorked,
-                        hasAcademicDegree
-                );
+            // Добавляем сотрудника в базу данных и в таблицу
+            employeeService.addEmployee(newEmployee);
+            employeeList.add(newEmployee);
+            // Очищаем все поля
+            firstNameField.clear();  // Очищаем имя
+            lastNameField.clear();   // Очищаем фамилию
+            surnameField.clear();    // Очищаем отчество
+            positionComboBox.getSelectionModel().clearSelection();  // Очищаем выбор в ComboBox
+            baseSalaryField.clear();  // Очищаем оклад
+            yearsWorkedField.clear();  // Очищаем стаж
+            academicDegreeCheck.setSelected(false);  // Сбрасываем чекбокс
 
-                // Добавляем сотрудника в базу данных и в таблицу
-                employeeService.addEmployee(newEmployee);
-                employeeList.add(newEmployee);
+            // Обновляем таблицу
+            employeeTable.refresh(); // Обновляем таблицу в UI
 
-                // Очищаем все поля
-                firstNameField.clear();
-                lastNameField.clear();
-                surnameField.clear();
-                positionField.clear();
-                baseSalaryField.clear();
-                yearsWorkedField.clear();
-                academicDegreeCheck.setSelected(false);
-
-            } catch (NumberFormatException e) {
-                showAlert("Ошибка", "Все числовые поля должны содержать валидные значения.");
-            }
         } else {
-            showAlert("Ошибка", "Пожалуйста, заполните все поля");
+            showAlert("Ошибка", "Пожалуйста, выберите должность.");
         }
     }
-
 
     @FXML
     private void handleDeleteEmployee() {

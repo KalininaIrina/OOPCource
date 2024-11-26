@@ -12,10 +12,9 @@ public class Employee {
     private final SimpleIntegerProperty yearsWorked;
     private final SimpleBooleanProperty academicDegree;
 
-    // Конструктор
-    public Employee(int id, String firstName, String lastName, String surname, int positionId,
-                    double baseSalary, int yearsWorked, boolean academicDegree) {
-        this.id = new SimpleIntegerProperty(id);
+    // Конструктор с инициализацией свойств
+    public Employee(String firstName, String lastName, String surname, int positionId, double baseSalary, int yearsWorked, boolean academicDegree) {
+        this.id = new SimpleIntegerProperty(-1);  // Инициализируем id значением по умолчанию
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.surname = new SimpleStringProperty(surname);
@@ -25,7 +24,7 @@ public class Employee {
         this.academicDegree = new SimpleBooleanProperty(academicDegree);
     }
 
-    // Getters для получения значения
+    // Getters
     public int getId() {
         return id.get();
     }
@@ -46,7 +45,6 @@ public class Employee {
         return positionId.get();
     }
 
-
     public double getBaseSalary() {
         return baseSalary.get();
     }
@@ -59,7 +57,7 @@ public class Employee {
         return academicDegree.get();
     }
 
-    // Setters для изменения значения
+    // Setters
     public void setId(int id) {
         this.id.set(id);
     }
@@ -92,7 +90,7 @@ public class Employee {
         this.academicDegree.set(academicDegree);
     }
 
-    // Методы для свойств (Property Methods)
+    // Property Methods
     public SimpleIntegerProperty idProperty() {
         return id;
     }

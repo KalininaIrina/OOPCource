@@ -5,6 +5,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+
 
 <VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.EmployeeController" styleClass="v-box root">
     <!-- Таблица для отображения сотрудников -->
@@ -25,7 +27,8 @@
     <TextField fx:id="firstNameField" promptText="Имя" styleClass="text-field"/>
     <TextField fx:id="surnameField" promptText="Отчество" styleClass="text-field"/>
     <TextField fx:id="departmentField" promptText="Отдел" styleClass="text-field"/>
-    <TextField fx:id="positionField" promptText="Должность" styleClass="text-field"/>
+    <!--<TextField fx:id="positionField" promptText="Должность" styleClass="text-field"/>-->
+    <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200"/>
     <TextField fx:id="baseSalaryField" promptText="Оклад" styleClass="text-field"/>
 
     <!-- Новые поля для расчета зарплаты -->
