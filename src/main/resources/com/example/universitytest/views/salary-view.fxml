@@ -6,7 +6,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox spacing="15" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.SalaryController">
+<VBox spacing="15" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.SalaryController" styleClass="v-box root">
 
     <Text fx:id="employeeNameText" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
     <Text fx:id="positionText"/>
@@ -15,15 +15,15 @@
     <Text fx:id="academicDegreeText"/>
 
     <Label text="Ввод данных для расчета: "/>
-    <TextField fx:id="hoursWorkedField" promptText="Часы работы"/>
-    <TextField fx:id="bonusField" promptText="Бонус (в %)"/>
+    <TextField fx:id="hoursWorkedField" promptText="Часы работы" styleClass="text-field"/>
+    <TextField fx:id="bonusField" promptText="Бонус (в %)" styleClass="text-field"/>
 
     <CheckBox fx:id="applyAcademicDegreeCheck" text="Применить увеличение из-за ученой степени"/>
 
-    <Button text="Рассчитать" onAction="#handleCalculateSalary"/>
-    <Label fx:id="totalSalaryLabel" text="Итоговая зарплата: "/>
+    <Button text="Рассчитать" onAction="#handleCalculateSalary" styleClass="button"/>
+    <Label fx:id="totalSalaryLabel" text="Итоговая зарплата: " styleClass="button"/>
 
-    <Button fx:id="generateReportButton" text="Сохранить отчет" onAction="#handleGenerateReport" />
+    <Button fx:id="generateReportButton" text="Сохранить отчет" onAction="#handleGenerateReport" styleClass="button"/>
 
-    <Button text="Закрыть" onAction="#handleCloseSalaryView" />
+    <Button text="Закрыть" onAction="#handleCloseSalaryView" styleClass="button"/>
 </VBox>

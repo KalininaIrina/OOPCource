@@ -1,5 +1,6 @@
 package com.example.universitytest.controllers;
 
+import com.example.universitytest.Main;
 import com.example.universitytest.models.Employee;
 import com.example.universitytest.services.EmployeeService;
 import com.example.universitytest.database.DatabaseConnection;
@@ -167,6 +168,7 @@ public class EmployeeController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitytest/views/salary-view.fxml"));
             Stage stage = new Stage();
             Scene scene = new Scene(loader.load());
+            scene.getStylesheets().add(Main.class.getResource("/com/example/universitytest/styles/styles.css").toExternalForm());
 
             // Получаем контроллер и передаем выбранного сотрудника
             SalaryController salaryController = loader.getController();
