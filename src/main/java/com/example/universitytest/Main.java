@@ -31,7 +31,7 @@ public class Main extends Application {
 
 
     // Метод для отображения окна калькулятора зарплаты
-    /*public void showSalaryView() {
+    public void showSalaryView() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("views/salary-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 600, 400);
@@ -42,7 +42,7 @@ public class Main extends Application {
             e.printStackTrace(); // Выводим подробности ошибки
             System.err.println("Ошибка при загрузке FXML для калькулятора зарплаты.");
         }
-    }*/
+    }
 
 
     public static void main(String[] args) {
