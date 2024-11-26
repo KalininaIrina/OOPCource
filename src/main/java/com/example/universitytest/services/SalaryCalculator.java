@@ -1,10 +1,12 @@
 package com.example.universitytest.services;
 
+import com.example.universitytest.database.DatabaseConnection;
 import com.example.universitytest.models.Employee;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.SQLException;
 
 public class SalaryCalculator {
     private Employee employee; //ссылка на сотрудника, для которого ведется расчет.
@@ -99,6 +101,13 @@ public class SalaryCalculator {
             throw new IllegalStateException("Сотрудник не существует");
         }
 
+        String positionName = null;
+        try {
+            positionName = new EmployeeService(DatabaseConnection.getConnection()).getPositionById(employee.getPositionId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         StringBuilder report = new StringBuilder();
         double baseSalary = employee.getBaseSalary();
         double allowances = calculateAllowances();
@@ -106,7 +115,7 @@ public class SalaryCalculator {
         double hourlyBonus = 0;
 
         // Если сотрудник преподаватель, добавляем надбавку за часы
-        if (employee.getPosition().equalsIgnoreCase("Преподаватель") && hoursWorked > 0) {
+        if (positionName.equalsIgnoreCase("Преподаватель") && hoursWorked > 0) {
             hourlyBonus = hoursWorked * 1000; // 1000 рублей за час
             allowances += hourlyBonus;
         }
@@ -124,7 +133,7 @@ public class SalaryCalculator {
         // Формируем отчет
         report.append("Отчет по заработной плате для сотрудника: ")
                 .append(employee.getLastName()).append(" ").append(employee.getFirstName()).append(" ").append(employee.getSurname()).append("\n")
-                .append("Должность: ").append(employee.getPosition()).append("\n")
+                .append("Должность: ").append(positionName).append("\n")
                 .append("Оклад: ").append(roundedBaseSalary).append("\n")
                 .append("Надбавка за стаж: ").append(new BigDecimal(baseSalary * 0.01 * employee.getYearsWorked()).setScale(2, RoundingMode.HALF_UP)).append("\n")
                 .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? new BigDecimal(baseSalary * 0.10).setScale(2, RoundingMode.HALF_UP) : "0.00").append("\n")

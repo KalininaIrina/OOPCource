@@ -2,18 +2,19 @@ package com.example.universitytest.controllers;
 
 import com.example.universitytest.models.Employee;
 import com.example.universitytest.services.EmployeeService;
-import javafx.beans.property.SimpleDoubleProperty;
+import com.example.universitytest.database.DatabaseConnection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import com.example.universitytest.Main;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class EmployeeController {
     @FXML
@@ -51,7 +52,17 @@ public class EmployeeController {
     @FXML
     private CheckBox academicDegreeCheck;
 
-    private EmployeeService employeeService = new EmployeeService();
+    private Connection connection;
+
+    {
+        try {
+            connection = DatabaseConnection.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private EmployeeService employeeService = new EmployeeService(connection);
     private ObservableList<Employee> employeeList = FXCollections.observableArrayList();
 
     @FXML
@@ -60,12 +71,15 @@ public class EmployeeController {
         firstNameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
         lastNameColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
         surnameColumn.setCellValueFactory(cellData -> cellData.getValue().surnameProperty());
-        departmentColumn.setCellValueFactory(cellData -> cellData.getValue().departmentProperty());
-        positionColumn.setCellValueFactory(cellData -> cellData.getValue().positionProperty());
+        positionColumn.setCellValueFactory(cellData -> cellData.getValue().positionIdProperty().asObject().asString()); // Отображаем position_id
         baseSalaryColumn.setCellValueFactory(cellData -> cellData.getValue().baseSalaryProperty().asObject());
 
+        // Заполняем список сотрудников из базы данных
+        employeeList.addAll(employeeService.getEmployees());
         employeeTable.setItems(employeeList);
     }
+
+
 
     @FXML
     private TextField positionField;
@@ -75,51 +89,43 @@ public class EmployeeController {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String surname = surnameField.getText();
-        String department = departmentField.getText();
-        String position = positionField.getText();
+        String positionIdText = positionField.getText();
         String baseSalaryText = baseSalaryField.getText();
 
         // Новые поля
         String yearsWorkedText = yearsWorkedField.getText();
-        //String hoursWorkedText = hoursWorkedField.getText();
         boolean hasAcademicDegree = academicDegreeCheck.isSelected();
 
-        if (!firstName.isEmpty() && !lastName.isEmpty() && !surname.isEmpty() && !department.isEmpty() && !position.isEmpty() && !baseSalaryText.isEmpty()) {
+        if (!firstName.isEmpty() && !lastName.isEmpty() && !surname.isEmpty() && !positionIdText.isEmpty() && !baseSalaryText.isEmpty() && !yearsWorkedText.isEmpty()) {
             try {
-                // Преобразуем строку оклада в double
+                // Преобразуем строковые данные в числа
+                int positionId = Integer.parseInt(positionIdText);
                 double baseSalary = Double.parseDouble(baseSalaryText);
-
-                // Преобразуем стаж и количество часов в числа
                 int yearsWorked = Integer.parseInt(yearsWorkedText);
-                //int hoursWorked = Integer.parseInt(hoursWorkedText);
 
-                // Создаем нового сотрудника с дополнительными параметрами
+                // Создаем нового сотрудника
                 Employee newEmployee = new Employee(
-                        employeeList.size() + 1, // ID будет автоматически увеличиваться
+                        employeeList.size() + 1, // ID автоматически увеличивается
                         firstName,
                         lastName,
                         surname,
-                        department,
-                        position,
+                        positionId,
                         baseSalary,
                         yearsWorked,
                         hasAcademicDegree
-                        //hoursWorked
                 );
 
-                // Добавляем сотрудника в сервис и в список
+                // Добавляем сотрудника в базу данных и в таблицу
                 employeeService.addEmployee(newEmployee);
                 employeeList.add(newEmployee);
 
-                // Очистка всех полей
+                // Очищаем все поля
                 firstNameField.clear();
                 lastNameField.clear();
                 surnameField.clear();
-                departmentField.clear();
                 positionField.clear();
                 baseSalaryField.clear();
                 yearsWorkedField.clear();
-                //hoursWorkedField.clear();
                 academicDegreeCheck.setSelected(false);
 
             } catch (NumberFormatException e) {
@@ -129,6 +135,7 @@ public class EmployeeController {
             showAlert("Ошибка", "Пожалуйста, заполните все поля");
         }
     }
+
 
     @FXML
     private void handleDeleteEmployee() {

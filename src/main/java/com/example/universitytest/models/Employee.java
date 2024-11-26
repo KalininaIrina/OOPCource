@@ -1,156 +1,127 @@
 package com.example.universitytest.models;
 
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 
 public class Employee {
-    private SimpleIntegerProperty id;
-    private SimpleStringProperty firstName;
-    private SimpleStringProperty lastName;
-    private SimpleStringProperty surname;
-    private SimpleStringProperty department;
-    private SimpleStringProperty position;
-    private SimpleDoubleProperty baseSalary;
-    private SimpleIntegerProperty yearsWorked; // Стаж
-    private SimpleBooleanProperty hasAcademicDegree; // Ученая степень
-    //private SimpleIntegerProperty hoursWorked; // Часы работы
+    private final SimpleIntegerProperty id;
+    private final SimpleStringProperty firstName;
+    private final SimpleStringProperty lastName;
+    private final SimpleStringProperty surname;
+    private final SimpleIntegerProperty positionId;
+    private final SimpleDoubleProperty baseSalary;
+    private final SimpleIntegerProperty yearsWorked;
+    private final SimpleBooleanProperty academicDegree;
 
-    public Employee(int id, String firstName, String lastName, String surname, String department, String position,
-                    double baseSalary, int yearsWorked, boolean hasAcademicDegree) {
+    // Конструктор
+    public Employee(int id, String firstName, String lastName, String surname, int positionId,
+                    double baseSalary, int yearsWorked, boolean academicDegree) {
         this.id = new SimpleIntegerProperty(id);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.surname = new SimpleStringProperty(surname);
-        this.department = new SimpleStringProperty(department);
-        this.position = new SimpleStringProperty(position);
+        this.positionId = new SimpleIntegerProperty(positionId);
         this.baseSalary = new SimpleDoubleProperty(baseSalary);
         this.yearsWorked = new SimpleIntegerProperty(yearsWorked);
-        this.hasAcademicDegree = new SimpleBooleanProperty(hasAcademicDegree);
-        //this.hoursWorked = new SimpleIntegerProperty(hoursWorked); // Инициализация поля для часов работы
+        this.academicDegree = new SimpleBooleanProperty(academicDegree);
     }
 
-    // Методы доступа для привязки данных (getters и setters)
+    // Getters для получения значения
     public int getId() {
         return id.get();
-    }
-
-    public void setId(int id) {
-        this.id.set(id);
-    }
-
-    public SimpleIntegerProperty idProperty() {
-        return id;
     }
 
     public String getFirstName() {
         return firstName.get();
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName.set(firstName);
-    }
-
-    public SimpleStringProperty firstNameProperty() {
-        return firstName;
-    }
-
     public String getLastName() {
         return lastName.get();
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName.set(lastName);
-    }
-
-    public SimpleStringProperty lastNameProperty() {
-        return lastName;
     }
 
     public String getSurname() {
         return surname.get();
     }
 
+    public int getPositionId() {
+        return positionId.get();
+    }
+
+
+    public double getBaseSalary() {
+        return baseSalary.get();
+    }
+
+    public int getYearsWorked() {
+        return yearsWorked.get();
+    }
+
+    public boolean hasAcademicDegree() {
+        return academicDegree.get();
+    }
+
+    // Setters для изменения значения
+    public void setId(int id) {
+        this.id.set(id);
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName.set(firstName);
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName.set(lastName);
+    }
+
     public void setSurname(String surname) {
         this.surname.set(surname);
     }
 
-    public SimpleStringProperty surnameProperty() {
-        return surname;
-    }
-
-    public String getDepartment() {
-        return department.get();
-    }
-
-    public void setDepartment(String department) {
-        this.department.set(department);
-    }
-
-    public SimpleStringProperty departmentProperty() {
-        return department;
-    }
-
-    public String getPosition() {
-        return position.get();
-    }
-
-    public void setPosition(String position) {
-        this.position.set(position);
-    }
-
-    public SimpleStringProperty positionProperty() {
-        return position;
-    }
-
-    public double getBaseSalary() {
-        return baseSalary.get();
+    public void setPositionId(int positionId) {
+        this.positionId.set(positionId);
     }
 
     public void setBaseSalary(double baseSalary) {
         this.baseSalary.set(baseSalary);
     }
 
-    public SimpleDoubleProperty baseSalaryProperty() {
-        return baseSalary;
-    }
-
-    // Методы для работы со стажем и ученой степенью
-    public int getYearsWorked() {
-        return yearsWorked.get();
-    }
-
     public void setYearsWorked(int yearsWorked) {
         this.yearsWorked.set(yearsWorked);
+    }
+
+    public void setAcademicDegree(boolean academicDegree) {
+        this.academicDegree.set(academicDegree);
+    }
+
+    // Методы для свойств (Property Methods)
+    public SimpleIntegerProperty idProperty() {
+        return id;
+    }
+
+    public SimpleStringProperty firstNameProperty() {
+        return firstName;
+    }
+
+    public SimpleStringProperty lastNameProperty() {
+        return lastName;
+    }
+
+    public SimpleStringProperty surnameProperty() {
+        return surname;
+    }
+
+    public SimpleIntegerProperty positionIdProperty() {
+        return positionId;
+    }
+
+    public SimpleDoubleProperty baseSalaryProperty() {
+        return baseSalary;
     }
 
     public SimpleIntegerProperty yearsWorkedProperty() {
         return yearsWorked;
     }
 
-    public boolean hasAcademicDegree() {
-        return hasAcademicDegree.get();
+    public SimpleBooleanProperty academicDegreeProperty() {
+        return academicDegree;
     }
-
-    public void setHasAcademicDegree(boolean hasAcademicDegree) {
-        this.hasAcademicDegree.set(hasAcademicDegree);
-    }
-
-    public SimpleBooleanProperty hasAcademicDegreeProperty() {
-        return hasAcademicDegree;
-    }
-
-    // Методы для работы с часами работы
-    /*public int getHoursWorked() {
-        return hoursWorked.get();
-    }*/
-
-    /*public void setHoursWorked(int hoursWorked) {
-        this.hoursWorked.set(hoursWorked);
-    }
-
-    public SimpleIntegerProperty hoursWorkedProperty() {
-        return hoursWorked;
-    }*/
 }

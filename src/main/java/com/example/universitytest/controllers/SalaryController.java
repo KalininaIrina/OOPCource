@@ -1,6 +1,7 @@
 package com.example.universitytest.controllers;
 
 import com.example.universitytest.models.Employee;
+import com.example.universitytest.services.EmployeeService;
 import com.example.universitytest.services.SalaryCalculator;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -43,18 +44,23 @@ public class SalaryController {
 
     private Employee currentEmployee;
     private SalaryCalculator salaryCalculator;
+    private EmployeeService employeeService;
 
     public void initialize(Employee employee) {
         this.currentEmployee = employee;
         this.salaryCalculator = new SalaryCalculator(currentEmployee);
 
+        // Получаем название должности через EmployeeService
+        String positionName = employeeService.getPositionById(currentEmployee.getPositionId());
+
         // Заполняем информацию о сотруднике
         employeeNameText.setText(currentEmployee.getLastName() + " " + currentEmployee.getFirstName() + " " + currentEmployee.getSurname());
-        positionText.setText("Должность: " + currentEmployee.getPosition());
+        positionText.setText("Должность: " + positionName); // Отображаем название должности
         baseSalaryText.setText("Оклад: " + currentEmployee.getBaseSalary());
         yearsWorkedText.setText("Стаж: " + currentEmployee.getYearsWorked() + " лет");
         academicDegreeText.setText("Учёная степень: " + (currentEmployee.hasAcademicDegree() ? "Есть" : "Нет"));
     }
+
 
     @FXML
     private void handleCalculateSalary() {
