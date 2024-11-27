@@ -9,18 +9,20 @@ import java.math.RoundingMode;
 import java.sql.SQLException;
 
 public class SalaryCalculator {
-    private Employee employee; //ссылка на сотрудника, для которого ведется расчет.
-    private double totalSalary; // итоговая зарплата после расчетов
+    private int totalSalary; // Убрали final
+    private Employee employee;
+    private EmployeeService employeeService;
 
-    public SalaryCalculator() {
+    public SalaryCalculator(Employee employee, EmployeeService employeeService) {
+        this.employee = employee;
+        this.employeeService = employeeService;
     }
 
     public SalaryCalculator(Employee employee) {
         this.employee = employee;
-        this.totalSalary = 0; // Начальное значение
+        this.totalSalary = 0;
     }
 
-    // Методы доступа
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
@@ -29,116 +31,75 @@ public class SalaryCalculator {
         return employee;
     }
 
-    public void setTotalSalary(double totalSalary) {
-        this.totalSalary = totalSalary;
-    }
-
-    public double getTotalSalary() {
-        return totalSalary;
-    }
-
-    // Метод для расчета чистой зарплаты
-    // Перепишем метод так, чтобы он не требовал аргументов
-    public double calculateNetSalary() {
+    public double calculateTotalSalary(double hoursWorked, boolean includeAcademicDegreeBonus) {
         if (employee == null) {
             throw new IllegalStateException("Сотрудника не существует");
         }
 
         double baseSalary = employee.getBaseSalary();
-        double allowances = calculateAllowances();
+        double allowances = calculateAllowances(hoursWorked, includeAcademicDegreeBonus);
         double deductions = calculateDeductions();
 
-        // Рассчитываем итоговую зарплату
-        double totalSalary = baseSalary + allowances - deductions;
-
-        // Округляем итоговую зарплату
-        BigDecimal roundedSalary = new BigDecimal(totalSalary).setScale(2, RoundingMode.HALF_UP);
-
-        // Обновляем totalSalary округленным значением
-        totalSalary = roundedSalary.doubleValue();
-
+        this.totalSalary = (int) round(baseSalary + allowances - deductions, 2);
         return totalSalary;
     }
 
-
-    // Метод для расчета надбавок
-    public double calculateAllowances() {
+    public double calculateAllowances(double hoursWorked, boolean includeAcademicDegreeBonus) {
         double baseSalary = employee.getBaseSalary();
         double allowances = 0;
 
-        // Надбавка за стаж: 1% за каждый год работы
-        int yearsWorked = employee.getYearsWorked();
-        allowances += baseSalary * 0.01 * yearsWorked;
-
-        // Надбавка за ученую степень
-        if (employee.hasAcademicDegree()) {
-            allowances += baseSalary * 0.10; // 10% за ученую степень
+        allowances += baseSalary * 0.01 * employee.getYearsWorked();
+        if (includeAcademicDegreeBonus && employee.hasAcademicDegree()) {
+            allowances += baseSalary * 0.10;
+        }
+        if (isLecturer() && hoursWorked > 0) {
+            allowances += hoursWorked * 10;
         }
 
         return allowances;
     }
 
-    // Метод для расчета вычетов
     public double calculateDeductions() {
         double baseSalary = employee.getBaseSalary();
-
-        // Пример вычета налога на доходы физических лиц (НДФЛ): 13% от общей зарплаты
         double tax = baseSalary * 0.13;
-
-        // Пример других вычетов (например, пенсионных взносов и страховых взносов)
-        double otherDeductions = baseSalary * 0.05; // Допустим, 5% других вычетов
-
+        double otherDeductions = baseSalary * 0.05;
         return tax + otherDeductions;
     }
 
-    // Метод для создания отчета по зарплате
-    // Перепишем метод так, чтобы он не требовал двух аргументов
     public String generateReport(double hoursWorked) {
         if (employee == null) {
-            throw new IllegalStateException("Сотрудник не существует");
+            throw new IllegalStateException("Сотрудника не существует");
         }
 
-        String positionName = null;
-        try {
-            positionName = new EmployeeService(DatabaseConnection.getConnection()).getPositionById(employee.getPositionId());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        String positionName = employeeService.getPositionById(employee.getPositionId());
 
-        StringBuilder report = new StringBuilder();
         double baseSalary = employee.getBaseSalary();
-        double allowances = calculateAllowances();  // Общие надбавки, например, за стаж
-        double deductions = calculateDeductions();  // Вычеты
-        double hourlyBonus = 0;
+        double allowances = calculateAllowances(hoursWorked, true);
+        double deductions = calculateDeductions();
+        double totalSalary = round(baseSalary + allowances - deductions, 2);
 
-        // Если сотрудник преподаватель, добавляем надбавку за часы
-        if (positionName.equalsIgnoreCase("Преподаватель") && hoursWorked > 0) {
-            hourlyBonus = hoursWorked * 10; // 10 рублей за час
-            allowances += hourlyBonus;
-        }
-
-        // Округление значений до двух знаков
-        BigDecimal roundedBaseSalary = new BigDecimal(baseSalary).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal roundedAllowances = new BigDecimal(allowances).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal roundedDeductions = new BigDecimal(deductions).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal roundedHourlyBonus = new BigDecimal(hourlyBonus).setScale(2, RoundingMode.HALF_UP);
-
-        // Рассчитываем чистую зарплату и округляем ее
-        BigDecimal netSalary = roundedBaseSalary.add(roundedAllowances).subtract(roundedDeductions);
-        BigDecimal roundedNetSalary = netSalary.setScale(2, RoundingMode.HALF_UP);
-
-        // Формируем отчет
-        report.append("Отчет по заработной плате для сотрудника: ")
+        return new StringBuilder()
+                .append("Отчет по заработной плате для сотрудника: ")
                 .append(employee.getLastName()).append(" ").append(employee.getFirstName()).append(" ").append(employee.getSurname()).append("\n")
                 .append("Должность: ").append(positionName).append("\n")
-                .append("Оклад: ").append(roundedBaseSalary).append("\n")
-                .append("Надбавка за стаж: ").append(new BigDecimal(baseSalary * 0.01 * employee.getYearsWorked()).setScale(2, RoundingMode.HALF_UP)).append("\n")
-                .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? new BigDecimal(baseSalary * 0.10).setScale(2, RoundingMode.HALF_UP) : "0.00").append("\n")
-                .append("Надбавка за количество часов: ").append(roundedHourlyBonus).append("\n")
-                .append("Вычеты (налог + другие): ").append(roundedDeductions).append("\n")
-                .append("Итоговая сумма заработной платы (чистая): ").append(roundedNetSalary).append("\n");
-
-        return report.toString();
+                .append("Оклад: ").append(round(baseSalary, 2)).append("\n")
+                .append("Надбавка за стаж: ").append(round(baseSalary * 0.01 * employee.getYearsWorked(), 2)).append("\n")
+                .append("Надбавка за ученую степень: ").append(employee.hasAcademicDegree() ? round(baseSalary * 0.10, 2) : "0.00").append("\n")
+                .append("Надбавка за количество часов: ").append(isLecturer() ? round(hoursWorked * 10, 2) : "0.00").append("\n")
+                .append("Вычеты (налоги и взносы): ").append(round(deductions, 2)).append("\n")
+                .append("Итоговая зарплата: ").append(totalSalary).append("\n")
+                .toString();
     }
 
+    private boolean isLecturer() {
+        if (employeeService == null) {
+            throw new IllegalStateException("EmployeeService не инициализирован");
+        }
+        String positionName = employeeService.getPositionById(employee.getPositionId());
+        return positionName.equalsIgnoreCase("Преподаватель");
+    }
+
+    private static double round(double value, int scale) {
+        return new BigDecimal(value).setScale(scale, RoundingMode.HALF_UP).doubleValue();
+    }
 }

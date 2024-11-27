@@ -53,104 +53,108 @@ public class SalaryController {
 
     public void initialize(Employee employee) {
         this.currentEmployee = employee;
-        this.salaryCalculator = new SalaryCalculator(currentEmployee);
         try {
             this.employeeService = new EmployeeService(DatabaseConnection.getConnection());
         } catch (SQLException e) {
+            showAlert("Ошибка", "Ошибка подключения к базе данных.");
             throw new RuntimeException(e);
         }
+        this.salaryCalculator = new SalaryCalculator(currentEmployee, employeeService);
 
-        // Получаем название должности через EmployeeService
+        setupEmployeeData();
+        setupInputListeners();
+    }
+
+    private void setupEmployeeData() {
         String positionName = employeeService.getPositionById(currentEmployee.getPositionId());
 
-        // Заполняем информацию о сотруднике
         employeeNameText.setText(currentEmployee.getLastName() + " " + currentEmployee.getFirstName() + " " + currentEmployee.getSurname());
-        positionText.setText("Должность: " + positionName); // Отображаем название должности
+        positionText.setText("Должность: " + positionName);
         baseSalaryText.setText("Оклад: " + currentEmployee.getBaseSalary());
         yearsWorkedText.setText("Стаж: " + currentEmployee.getYearsWorked() + " лет");
         academicDegreeText.setText("Учёная степень: " + (currentEmployee.hasAcademicDegree() ? "Есть" : "Нет"));
     }
 
+    private void setupInputListeners() {
+        // Только числовой ввод
+        hoursWorkedField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*\\.?\\d*")) {
+                hoursWorkedField.setText(oldValue);
+            }
+        });
+
+        bonusField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*\\.?\\d*")) {
+                bonusField.setText(oldValue);
+            }
+        });
+    }
 
     @FXML
     private void handleCalculateSalary() {
         try {
-            // Проверяем, что поля для ввода не пустые и корректные данные
-            if (hoursWorkedField.getText().isEmpty() || bonusField.getText().isEmpty()) {
-                showAlert("Ошибка", "Пожалуйста, заполните все поля.");
-                return;
-            }
+            double hoursWorked = getValidatedInput(hoursWorkedField, "Часы работы");
 
-            double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
-            double bonusPercent = Double.parseDouble(bonusField.getText());
+            // Вызываем общий метод расчета зарплаты
+            double calculatedSalary = salaryCalculator.calculateTotalSalary(
+                    hoursWorked,
+                    applyAcademicDegreeCheck.isSelected()
+            );
 
-            // Проверка на корректность данных
-            if (hoursWorked <= 0 || bonusPercent < 0) {
-                showAlert("Ошибка", "Часы работы и процент бонуса должны быть положительными числами.");
-                return;
-            }
-
-            // Рассчитываем начальную зарплату
-            double calculatedSalary = salaryCalculator.calculateNetSalary(); // Расчет зарплаты без бонуса и ученой степени
-            double bonus = (bonusPercent / 100) * calculatedSalary; // Рассчитываем бонус
-            calculatedSalary += bonus; // Добавляем бонус к зарплате
-
-            // Если выбран флажок для ученой степени, применяем 10% увеличение
-            if (applyAcademicDegreeCheck.isSelected()) {
-                calculatedSalary += calculatedSalary * 0.1; // 10% добавка за ученую степень
-            }
-
-            // Округляем итоговую зарплату до двух знаков
-            BigDecimal calculatedSalaryBigDecimal = new BigDecimal(calculatedSalary).setScale(2, RoundingMode.HALF_UP);
-            calculatedSalary = calculatedSalaryBigDecimal.doubleValue();
-
-            // Отображаем итоговую зарплату
-            totalSalaryLabel.setText("Итоговая зарплата: " + calculatedSalary);
-
-        } catch (NumberFormatException e) {
-            showAlert("Ошибка", "Введите корректные данные для расчета.");
+            totalSalaryLabel.setText("Итоговая зарплата: " + formatDouble(calculatedSalary));
+        } catch (IllegalArgumentException e) {
+            showAlert("Ошибка", e.getMessage());
         }
     }
 
     @FXML
     private void handleGenerateReport() {
         try {
-            // Проверяем, что поле для ввода часов не пустое
-            if (hoursWorkedField.getText().isEmpty()) {
-                showAlert("Ошибка", "Пожалуйста, введите количество отработанных часов.");
-                return;
-            }
-
-            // Преобразуем строку в число
-            double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
-
-            // Генерируем отчет
+            double hoursWorked = getValidatedInput(hoursWorkedField, "Часы работы");
             String report = salaryCalculator.generateReport(hoursWorked);
-
-            // Открываем диалог для выбора пути сохранения файла
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-            fileChooser.setInitialFileName("salary_report.txt");
-            File file = fileChooser.showSaveDialog(null);
-
-            if (file != null) {
-                // Сохраняем отчет в выбранный файл
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                    writer.write(report);
-                    showAlert("Успех", "Отчет успешно сохранен!");
-                } catch (IOException e) {
-                    showAlert("Ошибка", "Ошибка при сохранении отчета.");
-                }
-            }
-
-        } catch (NumberFormatException e) {
-            showAlert("Ошибка", "Введите корректное количество часов.");
+            saveReportToFile(report);
+        } catch (IllegalArgumentException e) {
+            showAlert("Ошибка", e.getMessage());
         }
     }
 
+    private double getValidatedInput(TextField field, String fieldName) {
+        if (field.getText().isEmpty()) {
+            throw new IllegalArgumentException("Пожалуйста, заполните поле: " + fieldName);
+        }
+        try {
+            double value = Double.parseDouble(field.getText());
+            if (value < 0) {
+                throw new IllegalArgumentException(fieldName + " должно быть положительным числом.");
+            }
+            return value;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Введите корректное число в поле: " + fieldName);
+        }
+    }
+
+    private void saveReportToFile(String report) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        fileChooser.setInitialFileName("salary_report.txt");
+        File file = fileChooser.showSaveDialog(totalSalaryLabel.getScene().getWindow());
+
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(report);
+                showAlert("Успех", "Отчет успешно сохранен!");
+            } catch (IOException e) {
+                showAlert("Ошибка", "Ошибка при сохранении отчета.");
+            }
+        }
+    }
+
+    private String formatDouble(double value) {
+        return new BigDecimal(value).setScale(2, RoundingMode.HALF_UP).toString();
+    }
 
     private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
