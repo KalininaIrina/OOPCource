@@ -13,6 +13,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 
 import javafx.stage.FileChooser;
@@ -73,20 +75,25 @@ public class SalaryController {
     @FXML
     private void handleCalculateSalary() {
         try {
-            // Проверяем, что поля для ввода не пустые
+            // Проверяем, что поля для ввода не пустые и корректные данные
             if (hoursWorkedField.getText().isEmpty() || bonusField.getText().isEmpty()) {
                 showAlert("Ошибка", "Пожалуйста, заполните все поля.");
                 return;
             }
 
-            // Преобразуем строки в числовые значения
             double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
             double bonusPercent = Double.parseDouble(bonusField.getText());
 
-            // Рассчитываем итоговую зарплату
-            double calculatedSalary = salaryCalculator.calculateNetSalary(); // Рассчитаем начальную зарплату
+            // Проверка на корректность данных
+            if (hoursWorked <= 0 || bonusPercent < 0) {
+                showAlert("Ошибка", "Часы работы и процент бонуса должны быть положительными числами.");
+                return;
+            }
+
+            // Рассчитываем начальную зарплату
+            double calculatedSalary = salaryCalculator.calculateNetSalary(); // Расчет зарплаты без бонуса и ученой степени
             double bonus = (bonusPercent / 100) * calculatedSalary; // Рассчитываем бонус
-            calculatedSalary += bonus; // Добавляем бонус
+            calculatedSalary += bonus; // Добавляем бонус к зарплате
 
             // Если выбран флажок для ученой степени, применяем 10% увеличение
             if (applyAcademicDegreeCheck.isSelected()) {
@@ -94,7 +101,8 @@ public class SalaryController {
             }
 
             // Округляем итоговую зарплату до двух знаков
-            calculatedSalary = Math.round(calculatedSalary * 100.0) / 100.0;
+            BigDecimal calculatedSalaryBigDecimal = new BigDecimal(calculatedSalary).setScale(2, RoundingMode.HALF_UP);
+            calculatedSalary = calculatedSalaryBigDecimal.doubleValue();
 
             // Отображаем итоговую зарплату
             totalSalaryLabel.setText("Итоговая зарплата: " + calculatedSalary);
@@ -103,7 +111,6 @@ public class SalaryController {
             showAlert("Ошибка", "Введите корректные данные для расчета.");
         }
     }
-
 
     @FXML
     private void handleGenerateReport() {

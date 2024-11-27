@@ -38,6 +38,25 @@
     -fx-padding: 10px;
 }
 
+.combo-box {
+    -fx-border-color: #3a3a3a;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+}
+
+.combo-box .combo-box-popup {
+    -fx-background-color: white;
+    -fx-border-color: #3a3a3a;
+    -fx-border-radius: 5px;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #3a3a3a;
+}
+
+
 /* Стили для таблицы */
 .table-view {
     -fx-background-color: #f0f0f0;

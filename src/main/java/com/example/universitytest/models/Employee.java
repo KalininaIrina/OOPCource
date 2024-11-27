@@ -11,10 +11,11 @@ public class Employee {
     private final SimpleDoubleProperty baseSalary;
     private final SimpleIntegerProperty yearsWorked;
     private final SimpleBooleanProperty academicDegree;
+    private final SimpleIntegerProperty departmentId;
 
     // Конструктор с инициализацией свойств
-    public Employee(String firstName, String lastName, String surname, int positionId, double baseSalary, int yearsWorked, boolean academicDegree) {
-        this.id = new SimpleIntegerProperty(-1);  // Инициализируем id значением по умолчанию
+    public Employee(String firstName, String lastName, String surname, int positionId, double baseSalary, int yearsWorked, boolean academicDegree, int departmentId) {
+        this.id = new SimpleIntegerProperty(-1);
         this.firstName = new SimpleStringProperty(firstName);
         this.lastName = new SimpleStringProperty(lastName);
         this.surname = new SimpleStringProperty(surname);
@@ -22,6 +23,7 @@ public class Employee {
         this.baseSalary = new SimpleDoubleProperty(baseSalary);
         this.yearsWorked = new SimpleIntegerProperty(yearsWorked);
         this.academicDegree = new SimpleBooleanProperty(academicDegree);
+        this.departmentId = new SimpleIntegerProperty(departmentId);
     }
 
     // Getters
@@ -121,5 +123,16 @@ public class Employee {
 
     public SimpleBooleanProperty academicDegreeProperty() {
         return academicDegree;
+    }
+    public int getDepartmentId() {
+        return departmentId.get();
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId.set(departmentId);
+    }
+
+    public SimpleIntegerProperty departmentIdProperty() {
+        return departmentId;
     }
 }

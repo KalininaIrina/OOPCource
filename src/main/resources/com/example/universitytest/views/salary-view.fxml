@@ -21,7 +21,7 @@
     <CheckBox fx:id="applyAcademicDegreeCheck" text="Применить увеличение из-за ученой степени"/>
 
     <Button text="Рассчитать" onAction="#handleCalculateSalary" styleClass="button"/>
-    <Label fx:id="totalSalaryLabel" text="Итоговая зарплата: " styleClass="button"/>
+    <Label fx:id="totalSalaryLabel" text="Итоговая зарплата: "/>
 
     <Button fx:id="generateReportButton" text="Сохранить отчет" onAction="#handleGenerateReport" styleClass="button"/>
 

@@ -16,7 +16,7 @@
             <TableColumn fx:id="lastNameColumn" text="Фамилия" styleClass="table-column-header"/>
             <TableColumn fx:id="firstNameColumn" text="Имя" styleClass="table-column-header"/>
             <TableColumn fx:id="surnameColumn" text="Отчество" styleClass="table-column-header"/>
-            <TableColumn fx:id="departmentColumn" text="Отдел" styleClass="table-column-header"/>
+            <TableColumn fx:id="departmentColumn" text="Кафедра" styleClass="table-column-header"/>
             <TableColumn fx:id="positionColumn" text="Должность" styleClass="table-column-header"/>
             <TableColumn fx:id="baseSalaryColumn" text="Оклад" styleClass="table-column-header"/>
         </columns>
@@ -26,9 +26,10 @@
     <TextField fx:id="lastNameField" promptText="Фамилия" styleClass="text-field"/>
     <TextField fx:id="firstNameField" promptText="Имя" styleClass="text-field"/>
     <TextField fx:id="surnameField" promptText="Отчество" styleClass="text-field"/>
-    <TextField fx:id="departmentField" promptText="Отдел" styleClass="text-field"/>
+    <!--<TextField fx:id="departmentField" promptText="Отдел" styleClass="text-field"/>-->
     <!--<TextField fx:id="positionField" promptText="Должность" styleClass="text-field"/>-->
-    <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200"/>
+    <ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
+    <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Должность" styleClass="combo-box"/>
     <TextField fx:id="baseSalaryField" promptText="Оклад" styleClass="text-field"/>
 
     <!-- Новые поля для расчета зарплаты -->

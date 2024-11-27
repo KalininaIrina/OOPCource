@@ -20,6 +20,7 @@ public class SalaryCalculator {
         this.totalSalary = 0; // Начальное значение
     }
 
+    // Методы доступа
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
@@ -37,6 +38,7 @@ public class SalaryCalculator {
     }
 
     // Метод для расчета чистой зарплаты
+    // Перепишем метод так, чтобы он не требовал аргументов
     public double calculateNetSalary() {
         if (employee == null) {
             throw new IllegalStateException("Сотрудника не существует");
@@ -47,7 +49,7 @@ public class SalaryCalculator {
         double deductions = calculateDeductions();
 
         // Рассчитываем итоговую зарплату
-        totalSalary = baseSalary + allowances - deductions;
+        double totalSalary = baseSalary + allowances - deductions;
 
         // Округляем итоговую зарплату
         BigDecimal roundedSalary = new BigDecimal(totalSalary).setScale(2, RoundingMode.HALF_UP);
@@ -57,7 +59,6 @@ public class SalaryCalculator {
 
         return totalSalary;
     }
-
 
 
     // Метод для расчета надбавок
@@ -73,11 +74,6 @@ public class SalaryCalculator {
         if (employee.hasAcademicDegree()) {
             allowances += baseSalary * 0.10; // 10% за ученую степень
         }
-
-        // Надбавка за количество часов (если это преподаватель)
-        /*if (employee.getPosition().equalsIgnoreCase("Преподаватель") && employee.getHoursWorked() > 0) {
-            allowances += employee.getHoursWorked() * 1000; // 1000 рублей за каждый рабочий час
-        }*/
 
         return allowances;
     }
@@ -96,6 +92,7 @@ public class SalaryCalculator {
     }
 
     // Метод для создания отчета по зарплате
+    // Перепишем метод так, чтобы он не требовал двух аргументов
     public String generateReport(double hoursWorked) {
         if (employee == null) {
             throw new IllegalStateException("Сотрудник не существует");
@@ -110,13 +107,13 @@ public class SalaryCalculator {
 
         StringBuilder report = new StringBuilder();
         double baseSalary = employee.getBaseSalary();
-        double allowances = calculateAllowances();
-        double deductions = calculateDeductions();
+        double allowances = calculateAllowances();  // Общие надбавки, например, за стаж
+        double deductions = calculateDeductions();  // Вычеты
         double hourlyBonus = 0;
 
         // Если сотрудник преподаватель, добавляем надбавку за часы
         if (positionName.equalsIgnoreCase("Преподаватель") && hoursWorked > 0) {
-            hourlyBonus = hoursWorked * 1000; // 1000 рублей за час
+            hourlyBonus = hoursWorked * 10; // 10 рублей за час
             allowances += hourlyBonus;
         }
 
@@ -143,7 +140,5 @@ public class SalaryCalculator {
 
         return report.toString();
     }
-
-
 
 }

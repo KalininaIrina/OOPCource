@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class EmployeeController {
     @FXML
@@ -55,6 +56,8 @@ public class EmployeeController {
     private CheckBox academicDegreeCheck;
     @FXML
     private ComboBox<String> positionComboBox;  // ComboBox для должностей
+    @FXML
+    private ComboBox<String> departmentComboBox;
 
     private Connection connection;
 
@@ -81,12 +84,31 @@ public class EmployeeController {
         positionComboBox.setItems(positionList); // Устанавливаем должности в ComboBox
         positionColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(employeeService.getPositionById(cellData.getValue().getPositionId())));
-
+        //loadDepartments();
+        ObservableList<String> departmentList = FXCollections.observableArrayList(employeeService.getAllDepartments());
+        departmentComboBox.setItems(departmentList);
+        departmentColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(employeeService.getDepartmentById(cellData.getValue().getDepartmentId())));
         baseSalaryColumn.setCellValueFactory(cellData -> cellData.getValue().baseSalaryProperty().asObject());
 
         // Заполняем список сотрудников из базы данных
         employeeList.addAll(employeeService.getEmployees());
         employeeTable.setItems(employeeList);
+    }
+
+    /*private void loadDepartments() {
+        List<String> departments = employeeService.getAllDepartments(); // Метод из сервиса
+        if (departments != null && !departments.isEmpty()) {
+            departmentComboBox.getItems().addAll(departments); // Добавляем данные в ComboBox
+        } else {
+            System.out.println("Список отделов пуст или не загружен.");
+        }
+    }*/
+
+    private void loadDepartments() {
+        List<String> departments = employeeService.getAllDepartments(); // Метод для получения всех отделов
+        ObservableList<String> departmentList = FXCollections.observableArrayList(departments);
+        departmentComboBox.setItems(departmentList); // Устанавливаем отделы в ComboBox
     }
 
 
@@ -97,46 +119,66 @@ public class EmployeeController {
     private void handleAddEmployee() {
         // Получаем выбранную должность из ComboBox
         String selectedPosition = positionComboBox.getSelectionModel().getSelectedItem();
-        if (selectedPosition != null) {
+        String selectedDepartment = departmentComboBox.getSelectionModel().getSelectedItem();
+
+        if (selectedPosition != null && selectedDepartment != null) {
             // Преобразуем название должности в ID
             int positionId = employeeService.getPositionIdByName(selectedPosition);
+            int departmentId = employeeService.getDepartmentIdByName(selectedDepartment);
 
-            // Преобразуем другие значения
-            String firstName = firstNameField.getText();
-            String lastName = lastNameField.getText();
-            String surname = surnameField.getText();
-            double baseSalary = Double.parseDouble(baseSalaryField.getText());
-            int yearsWorked = Integer.parseInt(yearsWorkedField.getText());
-            boolean hasAcademicDegree = academicDegreeCheck.isSelected();
+            // Проверяем, что все текстовые поля заполнены
+            if (firstNameField.getText().isEmpty() ||
+                    lastNameField.getText().isEmpty() ||
+                    surnameField.getText().isEmpty() ||
+                    baseSalaryField.getText().isEmpty() ||
+                    yearsWorkedField.getText().isEmpty()) {
+                showAlert("Ошибка", "Пожалуйста, заполните все поля.");
+                return;
+            }
 
-            // Создаем нового сотрудника без ID (оно будет назначено в базе данных)
-            Employee newEmployee = new Employee(
-                    firstName,
-                    lastName,
-                    surname,
-                    positionId,
-                    baseSalary,
-                    yearsWorked,
-                    hasAcademicDegree
-            );
+            try {
+                // Преобразуем данные из текстовых полей
+                String firstName = firstNameField.getText();
+                String lastName = lastNameField.getText();
+                String surname = surnameField.getText();
+                double baseSalary = Double.parseDouble(baseSalaryField.getText());
+                int yearsWorked = Integer.parseInt(yearsWorkedField.getText());
+                boolean hasAcademicDegree = academicDegreeCheck.isSelected();
 
-            // Добавляем сотрудника в базу данных и в таблицу
-            employeeService.addEmployee(newEmployee);
-            employeeList.add(newEmployee);
-            // Очищаем все поля
-            firstNameField.clear();  // Очищаем имя
-            lastNameField.clear();   // Очищаем фамилию
-            surnameField.clear();    // Очищаем отчество
-            positionComboBox.getSelectionModel().clearSelection();  // Очищаем выбор в ComboBox
-            baseSalaryField.clear();  // Очищаем оклад
-            yearsWorkedField.clear();  // Очищаем стаж
-            academicDegreeCheck.setSelected(false);  // Сбрасываем чекбокс
+                // Создаем нового сотрудника
+                Employee newEmployee = new Employee(
+                        firstName,
+                        lastName,
+                        surname,
+                        positionId,
+                        baseSalary,
+                        yearsWorked,
+                        hasAcademicDegree,
+                        departmentId
+                );
 
-            // Обновляем таблицу
-            employeeTable.refresh(); // Обновляем таблицу в UI
+                // Добавляем сотрудника в базу данных
+                employeeService.addEmployee(newEmployee);
 
+                // Добавляем сотрудника в локальный список и обновляем таблицу
+                employeeList.add(newEmployee);
+                employeeTable.refresh();
+
+                // Очищаем все поля
+                firstNameField.clear();
+                lastNameField.clear();
+                surnameField.clear();
+                positionComboBox.getSelectionModel().clearSelection();
+                departmentComboBox.getSelectionModel().clearSelection();
+                baseSalaryField.clear();
+                yearsWorkedField.clear();
+                academicDegreeCheck.setSelected(false);
+
+            } catch (NumberFormatException e) {
+                showAlert("Ошибка", "Пожалуйста, введите корректные значения для оклада и стажа.");
+            }
         } else {
-            showAlert("Ошибка", "Пожалуйста, выберите должность.");
+            showAlert("Ошибка", "Пожалуйста, выберите должность и департамент.");
         }
     }
 
