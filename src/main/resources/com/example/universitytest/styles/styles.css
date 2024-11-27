@@ -56,6 +56,55 @@
     -fx-background-color: #3a3a3a;
 }
 
+/* Общие стили для CheckBox */
+.check-box {
+    -fx-background-color: transparent;
+    -fx-padding: 0 10 0 0;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-alignment: center-left; /* Выравнивание текста относительно кнопки */
+}
+
+/* Кастомизация коробки чекбокса */
+.check-box .box {
+    -fx-background-color: #9098A9; /* Цвет выключенного чекбокса */
+    -fx-border-color: #9098A9;
+    -fx-border-radius: 3px;
+    -fx-min-width: 18px;
+    -fx-min-height: 18px;
+    -fx-max-width: 18px;
+    -fx-max-height: 18px;
+    -fx-padding: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 2, 0.5, 0, 0);
+    -fx-transition: all 0.3s ease;
+}
+
+/* Активное состояние чекбокса */
+.check-box:selected .box {
+    -fx-background-color: #506EEC; /* Цвет активного чекбокса */
+    -fx-border-color: #506EEC;
+    -fx-effect: dropshadow(gaussian, rgba(50, 205, 50, 0.5), 2, 0.5, 0, 0);
+}
+
+/* Положение галочки */
+.check-box .box > .mark {
+    -fx-background-color: white; /* Цвет галочки */
+    -fx-background-radius: 50%;
+    -fx-min-width: 10px;
+    -fx-min-height: 10px;
+    -fx-max-width: 10px;
+    -fx-max-height: 10px;
+    -fx-translate-x: 2px; /* Позиция в выключенном состоянии */
+    -fx-translate-y: 0;
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+/* Положение галочки в активном состоянии */
+.check-box:selected .box > .mark {
+    -fx-translate-x: 6px; /* Позиция в активном состоянии */
+}
+
+
 
 /* Стили для таблицы */
 .table-view {

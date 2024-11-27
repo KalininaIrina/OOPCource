@@ -271,4 +271,13 @@ public class EmployeeService {
         }
     }
 
+    public void updateHoursWorked(int employeeId, double hoursWorked) throws SQLException {
+        String query = "UPDATE employees SET hours_worked = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setDouble(1, hoursWorked);
+            stmt.setInt(2, employeeId);
+            stmt.executeUpdate();
+        }
+    }
+
 }

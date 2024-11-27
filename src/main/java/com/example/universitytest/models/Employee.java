@@ -12,6 +12,7 @@ public class Employee {
     private final SimpleIntegerProperty yearsWorked;
     private final SimpleBooleanProperty academicDegree;
     private final SimpleIntegerProperty departmentId;
+    private double hoursWorked;
 
     // Конструктор с инициализацией свойств
     public Employee(String firstName, String lastName, String surname, int positionId, double baseSalary, int yearsWorked, boolean academicDegree, int departmentId) {
@@ -134,5 +135,13 @@ public class Employee {
 
     public SimpleIntegerProperty departmentIdProperty() {
         return departmentId;
+    }
+
+    public double getHoursWorked() {
+        return hoursWorked;
+    }
+
+    public void setHoursWorked(double hoursWorked) {
+        this.hoursWorked = hoursWorked;
     }
 }

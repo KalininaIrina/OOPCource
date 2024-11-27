@@ -28,8 +28,6 @@ public class Main extends Application {
     }
 
 
-
-
     // Метод для отображения окна калькулятора зарплаты
     public void showSalaryView() {
         try {

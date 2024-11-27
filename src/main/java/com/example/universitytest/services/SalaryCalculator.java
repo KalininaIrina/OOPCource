@@ -6,32 +6,43 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SalaryCalculator {
     private int totalSalary; // Убрали final
     private Employee employee;
     private EmployeeService employeeService;
+    private Connection connection;
 
     public SalaryCalculator(Employee employee, EmployeeService employeeService) {
         this.employee = employee;
         this.employeeService = employeeService;
     }
 
-    public SalaryCalculator(Employee employee) {
+    public SalaryCalculator(Employee employee, EmployeeService employeeService, Connection connection) {
+        this.employee = employee;
+        this.employeeService = employeeService;
+        this.connection = connection;
+    }
+
+
+    /*public SalaryCalculator(Employee employee) {
         this.employee = employee;
         this.totalSalary = 0;
-    }
+    }*/
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
 
-    public Employee getEmployee() {
+    /*public Employee getEmployee() {
         return employee;
-    }
+    }*/
 
     public double calculateTotalSalary(double hoursWorked, boolean includeAcademicDegreeBonus) {
+
         if (employee == null) {
             throw new IllegalStateException("Сотрудника не существует");
         }
@@ -102,4 +113,14 @@ public class SalaryCalculator {
     private static double round(double value, int scale) {
         return new BigDecimal(value).setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
+
+    public void updateHoursWorked(int employeeId, double hoursWorked) throws SQLException {
+        String query = "UPDATE employees SET hours_worked = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setDouble(1, hoursWorked);
+            stmt.setInt(2, employeeId);
+            stmt.executeUpdate();
+        }
+    }
+    
 }

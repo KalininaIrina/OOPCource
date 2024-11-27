@@ -15,7 +15,7 @@
     <Text fx:id="academicDegreeText"/>
 
     <Label text="Ввод данных для расчета: "/>
-    <TextField fx:id="hoursWorkedField" promptText="Часы работы" styleClass="text-field"/>
+    <TextField fx:id="hoursWorkedField" promptText="Часы сверхурочной работы" styleClass="text-field"/>
     <TextField fx:id="bonusField" promptText="Бонус (в %)" styleClass="text-field"/>
 
     <CheckBox fx:id="applyAcademicDegreeCheck" text="Применить увеличение из-за ученой степени"/>

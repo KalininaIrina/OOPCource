@@ -15,6 +15,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import javafx.stage.FileChooser;
@@ -51,6 +53,8 @@ public class SalaryController {
     private SalaryCalculator salaryCalculator;
     private EmployeeService employeeService;
 
+    //private Connection connection;
+
     public void initialize(Employee employee) {
         this.currentEmployee = employee;
         try {
@@ -63,6 +67,10 @@ public class SalaryController {
 
         setupEmployeeData();
         setupInputListeners();
+    }
+
+    public Employee getEmployee() {
+        return currentEmployee;
     }
 
     private void setupEmployeeData() {
@@ -90,22 +98,99 @@ public class SalaryController {
         });
     }
 
+    //SalaryCalculator salaryCalculator = new SalaryCalculator(currentEmployee);
     @FXML
     private void handleCalculateSalary() {
         try {
-            double hoursWorked = getValidatedInput(hoursWorkedField, "Часы работы");
+            // Получаем отработанные часы из поля ввода
+            if (hoursWorkedField.getText().isEmpty()) {
+                showAlert("Ошибка", "Пожалуйста, введите количество отработанных часов.");
+                return;
+            }
 
-            // Вызываем общий метод расчета зарплаты
-            double calculatedSalary = salaryCalculator.calculateTotalSalary(
-                    hoursWorked,
-                    applyAcademicDegreeCheck.isSelected()
-            );
+            double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
 
-            totalSalaryLabel.setText("Итоговая зарплата: " + formatDouble(calculatedSalary));
-        } catch (IllegalArgumentException e) {
-            showAlert("Ошибка", e.getMessage());
+            // 1. Сохраняем отработанные часы в базе данных
+            saveHoursWorkedToDatabase(hoursWorked);
+
+            // 2. Рассчитываем зарплату
+            calculateSalary(hoursWorked);
+
+        } catch (NumberFormatException e) {
+            showAlert("Ошибка", "Введите корректное количество часов.");
+        } catch (SQLException e) {
+            showAlert("Ошибка", "Ошибка при сохранении данных в базу.");
         }
     }
+
+    // Метод для сохранения отработанных часов в базу данных
+    private void saveHoursWorkedToDatabase(double hoursWorked) throws SQLException {
+        Employee employee = getEmployee(); // Получаем текущего сотрудника
+        EmployeeService employeeService = new EmployeeService(DatabaseConnection.getConnection());
+        SalaryCalculator salaryCalculator = new SalaryCalculator(employee, employeeService, DatabaseConnection.getConnection());
+        salaryCalculator.updateHoursWorked(employee.getId(), hoursWorked);
+    }
+
+    // Метод для расчета зарплаты
+    private void calculateSalary(double hoursWorked) {
+        Employee employee = getEmployee(); // Получаем текущего сотрудника
+        EmployeeService employeeService = null;
+        try {
+            employeeService = new EmployeeService(DatabaseConnection.getConnection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        SalaryCalculator salaryCalculator = null;
+        try {
+            salaryCalculator = new SalaryCalculator(employee, employeeService, DatabaseConnection.getConnection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        double totalSalary = salaryCalculator.calculateTotalSalary(hoursWorked, applyAcademicDegreeCheck.isSelected());
+
+        // Отображаем рассчитанную зарплату
+        totalSalaryLabel.setText("Итоговая зарплата: " + totalSalary);
+    }
+
+
+    /*@FXML
+    private void handleSaveHoursWorked() {
+        try {
+            // Проверяем, что поле для ввода часов не пустое
+            if (hoursWorkedField.getText().isEmpty()) {
+                showAlert("Ошибка", "Пожалуйста, введите количество отработанных часов.");
+                return;
+            }
+
+            // Получаем количество отработанных часов
+            double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
+
+            // Получаем текущего сотрудника
+            Employee employee = getEmployee(); // Метод для получения текущего сотрудника
+
+            // Создаем объект EmployeeService для работы с данными
+            EmployeeService employeeService = new EmployeeService(DatabaseConnection.getConnection());
+
+            // Создаем объект SalaryCalculator с переданными параметрами
+            SalaryCalculator salaryCalculator = new SalaryCalculator(employee, employeeService, DatabaseConnection.getConnection());
+
+            // Обновляем отработанные часы в базе данных
+            salaryCalculator.updateHoursWorked(employee.getId(), hoursWorked);
+
+            // Обновляем поле у сотрудника (если оно нужно для дальнейших вычислений)
+            employee.setHoursWorked(hoursWorked);
+
+            // Отображаем успешное сообщение
+            showAlert("Успех", "Отработанные часы успешно обновлены!");
+
+        } catch (NumberFormatException e) {
+            showAlert("Ошибка", "Введите корректное количество часов.");
+        } catch (SQLException e) {
+            showAlert("Ошибка", "Ошибка при обновлении данных в базе.");
+        }
+    }*/
+
+
 
     @FXML
     private void handleGenerateReport() {
