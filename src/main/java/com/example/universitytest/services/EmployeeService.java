@@ -60,25 +60,58 @@ public class EmployeeService {
         return false;
     }
 
-    // Метод для обновления данных сотрудника по ID
-    public boolean updateEmployee(Employee updatedEmployee) {
-        String query = "UPDATE employees SET first_name = ?, last_name = ?, surname = ?, position_id = ?, base_salary = ?, years_worked = ?, academic_degree = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setString(1, updatedEmployee.getFirstName());
-            stmt.setString(2, updatedEmployee.getLastName());
-            stmt.setString(3, updatedEmployee.getSurname());
-            stmt.setInt(4, updatedEmployee.getPositionId());
-            stmt.setDouble(5, updatedEmployee.getBaseSalary());
-            stmt.setInt(6, updatedEmployee.getYearsWorked());
-            stmt.setBoolean(7, updatedEmployee.hasAcademicDegree());
-            stmt.setInt(8, updatedEmployee.getId());
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public List<Employee> getAllEmployees() throws SQLException {
+        List<Employee> employeeList = new ArrayList<>();
+        String query = "SELECT * FROM employees";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Employee employee = new Employee(); // Пустой конструктор
+                employee.setId(rs.getInt("id")); // Устанавливаем ID из базы
+                employee.setFirstName(rs.getString("first_name"));
+                employee.setLastName(rs.getString("last_name"));
+                employee.setSurname(rs.getString("surname"));
+                employee.setPositionId(rs.getInt("position_id"));
+                employee.setBaseSalary(rs.getDouble("base_salary"));
+                employee.setYearsWorked(rs.getInt("years_worked"));
+                employee.setAcademicDegree(rs.getBoolean("academic_degree"));
+                employee.setDepartmentId(rs.getInt("department_id"));
+                employee.setHoursWorked(rs.getDouble("hours_worked"));
+
+                employeeList.add(employee);
+            }
         }
-        return false;
+
+        return employeeList;
     }
+
+
+
+    // Метод для обновления данных сотрудника по ID
+    public void updateEmployee(Employee employee) throws SQLException {
+        String query = "UPDATE employees SET first_name = ?, last_name = ?, surname = ?, base_salary = ?, years_worked = ?, " +
+                "position_id = ?, academic_degree = ?, department_id = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, employee.getFirstName());
+            stmt.setString(2, employee.getLastName());
+            stmt.setString(3, employee.getSurname());
+            stmt.setDouble(4, employee.getBaseSalary());
+            stmt.setInt(5, employee.getYearsWorked());
+            stmt.setInt(6, employee.getPositionId());
+            stmt.setBoolean(7, employee.hasAcademicDegree());
+            stmt.setInt(8, employee.getDepartmentId());
+            stmt.setInt(9, employee.getId());
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Сотрудник с ID " + employee.getId() + " не найден.");
+            }
+        }
+    }
+
 
 
     // Получение всех сотрудников

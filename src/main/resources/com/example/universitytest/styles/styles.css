@@ -1,11 +1,7 @@
-/* Стили для кнопок */
-/*.button {
-
-    -fx-background-color: #3a3a3a;
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 14px;
-    -fx-padding: 10px;
-}*/
+/* Общие стили */
+.button, .text-field, .combo-box, .check-box {
+    -fx-padding: 0 10px; /* Общий padding */
+}
 
 /* Стили для кнопок */
 .button {
@@ -29,6 +25,15 @@
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.7), 7, 0, 0, 2);
 }
 
+/* Стили для блока кнопок (горизонтальный контейнер) */
+.button-container {
+    -fx-padding: 0 10px; /* Внешний отступ для блока */
+    -fx-spacing: 10px; /* Расстояние между кнопками */
+    -fx-alignment: center; /* Выравнивание по центру */
+    -fx-background-color: transparent;
+    -fx-orientation: horizontal; /* Горизонтальная ориентация */
+}
+
 /* Стили для текстовых полей */
 .text-field {
     -fx-border-color: #3a3a3a;
@@ -36,8 +41,13 @@
     -fx-background-radius: 5px;
     -fx-font-size: 14px;
     -fx-padding: 10px;
+    -fx-pref-width: 200px; /* Абсолютная ширина */
+    -fx-min-width: 200px;
+    -fx-max-width: 200px;
 }
 
+
+/* Стили для выпадающих списков */
 .combo-box {
     -fx-border-color: #3a3a3a;
     -fx-border-radius: 5px;
@@ -59,7 +69,7 @@
 /* Общие стили для CheckBox */
 .check-box {
     -fx-background-color: transparent;
-    -fx-padding: 0 10 0 0;
+    -fx-padding: 0 10px;
     -fx-border-color: transparent;
     -fx-cursor: hand;
     -fx-alignment: center-left; /* Выравнивание текста относительно кнопки */
@@ -81,8 +91,8 @@
 
 /* Активное состояние чекбокса */
 .check-box:selected .box {
-    -fx-background-color: #506EEC; /* Цвет активного чекбокса */
-    -fx-border-color: #506EEC;
+    -fx-background-color: #ff99ac; /* Цвет активного чекбокса */
+    -fx-border-color: #ff99ac;
     -fx-effect: dropshadow(gaussian, rgba(50, 205, 50, 0.5), 2, 0.5, 0, 0);
 }
 
@@ -94,17 +104,8 @@
     -fx-min-height: 10px;
     -fx-max-width: 10px;
     -fx-max-height: 10px;
-    -fx-translate-x: 2px; /* Позиция в выключенном состоянии */
-    -fx-translate-y: 0;
     -fx-transition: all 0.3s ease-in-out;
 }
-
-/* Положение галочки в активном состоянии */
-.check-box:selected .box > .mark {
-    -fx-translate-x: 6px; /* Позиция в активном состоянии */
-}
-
-
 
 /* Стили для таблицы */
 .table-view {
@@ -123,9 +124,17 @@
     -fx-font-size: 14px;
 }
 
-/* Стили для VBox */
+/* Стили для VBox, содержащего элементы под таблицей */
+.v-box.content {
+    -fx-padding: 20px 40px 20px 40px; /* Внешние отступы: сверху, справа, снизу, слева */
+    -fx-spacing: 10px; /* Расстояние между элементами */
+    -fx-background-color: transparent; /* Если нужен прозрачный фон */
+}
+
+
+/* Стили для основной VBox (без изменений для таблицы) */
 .v-box {
-    -fx-padding: 20px;
+    -fx-padding: 0;
     -fx-spacing: 10px;
     -fx-background-color: #f0e6f6;
 }
@@ -134,4 +143,3 @@
 .root {
     -fx-background-color: #f0e6f6;
 }
-

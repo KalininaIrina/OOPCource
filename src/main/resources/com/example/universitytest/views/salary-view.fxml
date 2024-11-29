@@ -18,7 +18,7 @@
     <TextField fx:id="hoursWorkedField" promptText="Часы сверхурочной работы" styleClass="text-field"/>
     <TextField fx:id="bonusField" promptText="Бонус (в %)" styleClass="text-field"/>
 
-    <CheckBox fx:id="applyAcademicDegreeCheck" text="Применить увеличение из-за ученой степени"/>
+    <CheckBox fx:id="applyAcademicDegreeCheck" text="Применить увеличение из-за ученой степени" styleClass="check-box"/>
 
     <Button text="Рассчитать" onAction="#handleCalculateSalary" styleClass="button"/>
     <Label fx:id="totalSalaryLabel" text="Итоговая зарплата: "/>

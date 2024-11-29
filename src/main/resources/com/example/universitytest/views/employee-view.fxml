@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableView?>
@@ -6,7 +7,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
-
 
 <VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.EmployeeController" styleClass="v-box root">
     <!-- Таблица для отображения сотрудников -->
@@ -22,22 +22,28 @@
         </columns>
     </TableView>
 
+    <VBox spacing="10" styleClass="v-box content">
     <!-- Поля для ввода данных о сотруднике -->
-    <TextField fx:id="lastNameField" promptText="Фамилия" styleClass="text-field"/>
-    <TextField fx:id="firstNameField" promptText="Имя" styleClass="text-field"/>
-    <TextField fx:id="surnameField" promptText="Отчество" styleClass="text-field"/>
-    <!--<TextField fx:id="departmentField" promptText="Отдел" styleClass="text-field"/>-->
-    <!--<TextField fx:id="positionField" promptText="Должность" styleClass="text-field"/>-->
-    <ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
-    <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Должность" styleClass="combo-box"/>
-    <TextField fx:id="baseSalaryField" promptText="Оклад" styleClass="text-field"/>
+    <VBox spacing="10">
+        <TextField fx:id="lastNameField" promptText="Фамилия" styleClass="text-field"/>
+        <TextField fx:id="firstNameField" promptText="Имя" styleClass="text-field"/>
+        <TextField fx:id="surnameField" promptText="Отчество" styleClass="text-field"/>
+        <TextField fx:id="baseSalaryField" promptText="Оклад" styleClass="text-field"/>
+        <TextField fx:id="yearsWorkedField" promptText="Стаж работы (лет)" styleClass="text-field"/>
+        <CheckBox fx:id="academicDegreeCheck" text="Наличие ученой степени" styleClass="check-box"/>
 
-    <!-- Новые поля для расчета зарплаты -->
-    <TextField fx:id="yearsWorkedField" promptText="Стаж работы (лет)" styleClass="text-field"/>
-    <CheckBox fx:id="academicDegreeCheck" text="Наличие ученой степени"/>
+        <!-- Выпадающие списки -->
+        <ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
+        <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Должность" styleClass="combo-box"/>
+    </VBox>
 
-    <!-- Кнопки для действий -->
-    <Button text="Добавить" onAction="#handleAddEmployee" styleClass="button"/>
-    <Button text="Удалить" onAction="#handleDeleteEmployee" styleClass="button"/>
-    <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button"/>
+    <!-- Контейнер для кнопок -->
+    <HBox spacing="10" styleClass="button-container">
+        <Button text="Добавить" onAction="#handleAddEmployee" styleClass="button"/>
+        <Button text="Редактировать" onAction="#loadEmployeeDataForEditing" styleClass="button"/>
+        <Button text="Сохранить изменения" onAction="#handleSaveEmployeeChanges" styleClass="button"/>
+        <Button text="Удалить" onAction="#handleDeleteEmployee" styleClass="button"/>
+        <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button"/>
+    </HBox>
+    </VBox>
 </VBox>

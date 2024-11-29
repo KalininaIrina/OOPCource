@@ -27,6 +27,21 @@ public class Employee {
         this.departmentId = new SimpleIntegerProperty(departmentId);
     }
 
+    // Пустой конструктор для возможности создания объекта без параметров
+    public Employee() {
+        this.id = new SimpleIntegerProperty(-1);
+        this.firstName = new SimpleStringProperty("");
+        this.lastName = new SimpleStringProperty("");
+        this.surname = new SimpleStringProperty("");
+        this.positionId = new SimpleIntegerProperty(-1);
+        this.baseSalary = new SimpleDoubleProperty(0.0);
+        this.yearsWorked = new SimpleIntegerProperty(0);
+        this.academicDegree = new SimpleBooleanProperty(false);
+        this.departmentId = new SimpleIntegerProperty(-1);
+        this.hoursWorked = 0.0;
+    }
+
+
     // Getters
     public int getId() {
         return id.get();
@@ -58,6 +73,14 @@ public class Employee {
 
     public boolean hasAcademicDegree() {
         return academicDegree.get();
+    }
+
+    public int getDepartmentId() {
+        return departmentId.get();
+    }
+
+    public double getHoursWorked() {
+        return hoursWorked;
     }
 
     // Setters
@@ -93,6 +116,14 @@ public class Employee {
         this.academicDegree.set(academicDegree);
     }
 
+    public void setDepartmentId(int departmentId) {
+        this.departmentId.set(departmentId);
+    }
+
+    public void setHoursWorked(double hoursWorked) {
+        this.hoursWorked = hoursWorked;
+    }
+
     // Property Methods
     public SimpleIntegerProperty idProperty() {
         return id;
@@ -125,23 +156,8 @@ public class Employee {
     public SimpleBooleanProperty academicDegreeProperty() {
         return academicDegree;
     }
-    public int getDepartmentId() {
-        return departmentId.get();
-    }
-
-    public void setDepartmentId(int departmentId) {
-        this.departmentId.set(departmentId);
-    }
 
     public SimpleIntegerProperty departmentIdProperty() {
         return departmentId;
-    }
-
-    public double getHoursWorked() {
-        return hoursWorked;
-    }
-
-    public void setHoursWorked(double hoursWorked) {
-        this.hoursWorked = hoursWorked;
     }
 }

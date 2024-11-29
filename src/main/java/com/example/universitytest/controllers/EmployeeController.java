@@ -182,6 +182,182 @@ public class EmployeeController {
         }
     }
 
+    private void updateEmployeeTable() {
+        try {
+            // Загружаем актуальный список сотрудников из базы
+            List<Employee> updatedEmployeeList = employeeService.getAllEmployees();
+
+            // Проверяем, что ID каждого сотрудника корректно загружен
+            /*for (Employee employee : updatedEmployeeList) {
+                System.out.println("Сотрудник ID: " + employee.getId());
+            }*/
+
+            // Обновляем таблицу
+            employeeTable.setItems(FXCollections.observableArrayList(updatedEmployeeList));
+        } catch (SQLException e) {
+            showAlert("Ошибка", "Не удалось обновить таблицу сотрудников.");
+        }
+    }
+
+
+
+    /*@FXML
+    private void handleUpdateEmployee() {
+        // Получаем выбранного сотрудника
+        Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
+
+        if (selectedEmployee != null) {
+            // Обновляем информацию о сотруднике в базе данных
+            employeeService.updateEmployee(selectedEmployee);
+
+            // После обновления данных обновляем таблицу сотрудников
+            updateEmployeeTable();
+
+            // Показываем сообщение об успешном обновлении
+            showAlert("Успех", "Данные сотрудника обновлены успешно!");
+
+        } else {
+            // Если сотрудник не выбран, показываем ошибку
+            showAlert("Ошибка", "Пожалуйста, выберите сотрудника для обновления.");
+        }
+    }*/
+
+    @FXML
+    private void loadEmployeeDataForEditing() {
+        Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
+        if (selectedEmployee != null) {
+            // Заполняем текстовые поля
+            firstNameField.setText(selectedEmployee.getFirstName());
+            lastNameField.setText(selectedEmployee.getLastName());
+            surnameField.setText(selectedEmployee.getSurname());
+            baseSalaryField.setText(String.valueOf(selectedEmployee.getBaseSalary()));
+            yearsWorkedField.setText(String.valueOf(selectedEmployee.getYearsWorked()));
+            //hoursWorkedField.setText(String.valueOf(selectedEmployee.getHoursWorked())); // Поле часов работы
+
+            // Заполняем ComboBox для должности и выбираем текущую
+            List<String> positions = employeeService.getAllPositions();
+            positionComboBox.getItems().setAll(positions);
+            positionComboBox.setValue(employeeService.getPositionById(selectedEmployee.getPositionId()));
+
+            // Заполняем ComboBox для отдела и выбираем текущий
+            List<String> departments = employeeService.getAllDepartments();
+            departmentComboBox.getItems().setAll(departments);
+            departmentComboBox.setValue(employeeService.getDepartmentById(selectedEmployee.getDepartmentId()));
+
+            // Заполняем CheckBox для ученой степени
+            academicDegreeCheck.setSelected(selectedEmployee.hasAcademicDegree());
+        } else {
+            showAlert("Ошибка", "Выберите сотрудника для редактирования.");
+        }
+    }
+
+
+
+    @FXML
+    private void handleSaveEmployeeChanges() {
+        Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
+        if (selectedEmployee != null) {
+            try {
+                // Получаем данные из текстовых полей
+                String firstName = firstNameField.getText();
+                String lastName = lastNameField.getText();
+                String surname = surnameField.getText();
+                double baseSalary = Double.parseDouble(baseSalaryField.getText());
+                //double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
+                int yearsWorked = Integer.parseInt(yearsWorkedField.getText());
+                String positionName = positionComboBox.getValue();
+                String departmentName = departmentComboBox.getValue();
+                boolean hasAcademicDegree = academicDegreeCheck.isSelected();
+
+                // Получаем ID должности и отдела
+                int positionId = employeeService.getPositionIdByName(positionName);
+                int departmentId = employeeService.getDepartmentIdByName(departmentName);
+
+                // Обновляем данные сотрудника
+                selectedEmployee.setFirstName(firstName);
+                selectedEmployee.setLastName(lastName);
+                selectedEmployee.setSurname(surname);
+                selectedEmployee.setBaseSalary(baseSalary);
+                //selectedEmployee.setHoursWorked(hoursWorked);
+                selectedEmployee.setYearsWorked(yearsWorked);
+                selectedEmployee.setPositionId(positionId);
+                selectedEmployee.setDepartmentId(departmentId);
+                selectedEmployee.setAcademicDegree(hasAcademicDegree);
+
+                // Обновляем данные в базе
+                employeeService.updateEmployee(selectedEmployee);
+
+                // Обновляем таблицу сотрудников
+                updateEmployeeTable();
+
+                // Очищаем все поля
+                firstNameField.clear();
+                lastNameField.clear();
+                surnameField.clear();
+                positionComboBox.getSelectionModel().clearSelection();
+                departmentComboBox.getSelectionModel().clearSelection();
+                baseSalaryField.clear();
+                yearsWorkedField.clear();
+                academicDegreeCheck.setSelected(false);
+
+                showAlert("Успех", "Данные сотрудника успешно обновлены.");
+            } catch (NumberFormatException e) {
+                showAlert("Ошибка", "Некорректный ввод данных.");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            showAlert("Ошибка", "Выберите сотрудника для сохранения изменений.");
+        }
+    }
+
+
+    /*private void updateEmployeeTable() {
+        try {
+            List<Employee> updatedEmployees = employeeService.getAllEmployees();  // Получаем актуальный список сотрудников
+            employeeTable.setItems(FXCollections.observableList(updatedEmployees));  // Перезагружаем таблицу
+        } catch (SQLException e) {
+            showAlert("Ошибка", "Не удалось обновить данные таблицы сотрудников.");
+        }
+    }*/
+
+
+
+
+    @FXML
+    private void handleUpdateEmployee() throws SQLException {
+        Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
+
+        if (selectedEmployee != null) {
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            double baseSalary = Double.parseDouble(baseSalaryField.getText());
+            //double hoursWorked = Double.parseDouble(hoursWorkedField.getText());
+            String positionName = positionComboBox.getValue();
+
+            // Получаем ID должности
+            int positionId = employeeService.getPositionIdByName(positionName);
+
+            // Обновляем данные сотрудника
+            selectedEmployee.setFirstName(firstName);
+            selectedEmployee.setLastName(lastName);
+            selectedEmployee.setBaseSalary(baseSalary);
+            //selectedEmployee.setHoursWorked(hoursWorked);
+            selectedEmployee.setPositionId(positionId);
+            //selectedEmployee.setPositionName(positionName);
+            employeeService.getPositionById(selectedEmployee.getPositionId());
+
+            // Обновляем запись в базе данных
+            employeeService.updateEmployee(selectedEmployee);
+            updateEmployeeTable();  // Обновляем таблицу сотрудников
+            showAlert("Успех", "Данные сотрудника обновлены.");
+        } else {
+            showAlert("Ошибка", "Выберите сотрудника для обновления.");
+        }
+    }
+
+
+
     @FXML
     private void handleDeleteEmployee() {
         Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
