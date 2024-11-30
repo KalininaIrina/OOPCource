@@ -8,7 +8,10 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 
-<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.universitytest.controllers.EmployeeController" styleClass="v-box root">
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.universitytest.controllers.EmployeeController"
+      styleClass="v-box root">
+
     <!-- Таблица для отображения сотрудников -->
     <TableView fx:id="employeeTable" styleClass="table-view">
         <columns>
@@ -22,9 +25,9 @@
         </columns>
     </TableView>
 
-    <VBox spacing="10" styleClass="v-box content">
-    <!-- Поля для ввода данных о сотруднике -->
-    <VBox spacing="10">
+    <!-- Контейнер для ввода данных -->
+    <VBox spacing="10" styleClass="v-box content" style="-fx-padding: 20;">
+        <!-- Поля для ввода данных о сотруднике -->
         <TextField fx:id="lastNameField" promptText="Фамилия" styleClass="text-field"/>
         <TextField fx:id="firstNameField" promptText="Имя" styleClass="text-field"/>
         <TextField fx:id="surnameField" promptText="Отчество" styleClass="text-field"/>
@@ -38,12 +41,11 @@
     </VBox>
 
     <!-- Контейнер для кнопок -->
-    <HBox spacing="10" styleClass="button-container">
+    <HBox spacing="10" alignment="CENTER" styleClass="button-container" style="-fx-padding: 20;">
         <Button text="Добавить" onAction="#handleAddEmployee" styleClass="button"/>
         <Button text="Редактировать" onAction="#loadEmployeeDataForEditing" styleClass="button"/>
         <Button text="Сохранить изменения" onAction="#handleSaveEmployeeChanges" styleClass="button"/>
         <Button text="Удалить" onAction="#handleDeleteEmployee" styleClass="button"/>
         <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button"/>
     </HBox>
-    </VBox>
 </VBox>
