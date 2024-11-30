@@ -22,10 +22,13 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("views/employee-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         scene.getStylesheets().add(Main.class.getResource("/com/example/universitytest/styles/styles.css").toExternalForm());
+
         primaryStage.setTitle("Управление сотрудниками");
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true); // Устанавливаем окно на весь экран
         primaryStage.show();
     }
+
 
 
     // Метод для отображения окна калькулятора зарплаты

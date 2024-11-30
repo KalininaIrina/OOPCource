@@ -41,9 +41,9 @@
     -fx-background-radius: 5px;
     -fx-font-size: 14px;
     -fx-padding: 10px;
-    -fx-pref-width: 200px; /* Абсолютная ширина */
-    -fx-min-width: 200px;
-    -fx-max-width: 200px;
+    -fx-pref-width: 450px; /* Абсолютная ширина */
+    -fx-min-width: 450px;
+    -fx-max-width: 450px;
 }
 
 
@@ -73,6 +73,7 @@
     -fx-border-color: transparent;
     -fx-cursor: hand;
     -fx-alignment: center-left; /* Выравнивание текста относительно кнопки */
+    -fx-font-size: 14px;
 }
 
 /* Кастомизация коробки чекбокса */
