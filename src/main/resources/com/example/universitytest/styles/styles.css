@@ -54,6 +54,7 @@
     -fx-background-radius: 5px;
     -fx-font-size: 14px;
     -fx-padding: 10px;
+    -fx-pref-height: 20;
 }
 
 .combo-box .combo-box-popup {

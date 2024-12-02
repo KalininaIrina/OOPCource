@@ -17,7 +17,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EmployeeController {
     @FXML
@@ -58,6 +61,13 @@ public class EmployeeController {
     private ComboBox<String> positionComboBox;  // ComboBox для должностей
     @FXML
     private ComboBox<String> departmentComboBox;
+    @FXML
+    private ComboBox<String> sortComboBox;
+    @FXML
+    private ComboBox<String> filterDepartmentComboBox;
+    @FXML
+    private ComboBox<String> filterPositionComboBox;
+
 
     private Connection connection;
 
@@ -94,7 +104,29 @@ public class EmployeeController {
         // Заполняем список сотрудников из базы данных
         employeeList.addAll(employeeService.getEmployees());
         employeeTable.setItems(employeeList);
+
+        // Инициализируем ComboBox
+        sortComboBox.getItems().clear();
+        sortComboBox.getItems().addAll("По фамилии", "По зарплате");
+        //sortComboBox.setValue("По фамилии"); // Значение по умолчанию
+
+        initializeFilters();
     }
+
+    private void initializeFilters() {
+        // Заполняем ComboBox кафедрами
+        List<String> departments = employeeService.getAllDepartments();
+        departments.add(0, "Все"); // Добавляем опцию "Все" для сброса фильтра
+        filterDepartmentComboBox.setItems(FXCollections.observableArrayList(departments));
+        //filterDepartmentComboBox.setValue("Все");
+
+        // Заполняем ComboBox должностями
+        List<String> positions = employeeService.getAllPositions();
+        positions.add(0, "Все"); // Добавляем опцию "Все" для сброса фильтра
+        filterPositionComboBox.setItems(FXCollections.observableArrayList(positions));
+        //filterPositionComboBox.setValue("Все");
+    }
+
 
     /*private void loadDepartments() {
         List<String> departments = employeeService.getAllDepartments(); // Метод из сервиса
@@ -375,6 +407,87 @@ public class EmployeeController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+    @FXML
+    private void handleSortEmployees() {
+        // Получаем выбранный критерий сортировки из ComboBox
+        String selectedCriterion = sortComboBox.getValue();
+
+        // Проверяем, что пользователь выбрал критерий сортировки
+        if (selectedCriterion == null) {
+            showAlert("Ошибка", "Выберите критерий сортировки.");
+            return;
+        }
+
+        // Копируем текущие данные из таблицы
+        ObservableList<Employee> employeeList = employeeTable.getItems();
+
+        // Если таблица пустая, сообщаем об этом
+        if (employeeList == null || employeeList.isEmpty()) {
+            showAlert("Ошибка", "Нет данных для сортировки.");
+            return;
+        }
+
+        // Сортируем список сотрудников в зависимости от выбранного критерия
+        List<Employee> sortedEmployeeList = new ArrayList<>(employeeList);
+        switch (selectedCriterion) {
+            case "По фамилии":
+                sortedEmployeeList.sort(Comparator.comparing(Employee::getLastName, String.CASE_INSENSITIVE_ORDER));
+                break;
+
+            case "По зарплате":
+                sortedEmployeeList.sort(Comparator.comparingDouble(Employee::getBaseSalary));
+                break;
+
+            default:
+                showAlert("Ошибка", "Неизвестный критерий сортировки.");
+                return;
+        }
+
+        // Обновляем таблицу с отсортированным списком
+        employeeTable.setItems(FXCollections.observableArrayList(sortedEmployeeList));
+    }
+
+    @FXML
+    private void resetFilters() {
+        filterDepartmentComboBox.setValue("Все");
+        filterPositionComboBox.setValue("Все");
+        updateEmployeeTable(); // Перезагружаем всех сотрудников
+    }
+
+
+    @FXML
+    private void handleFilterEmployees() {
+        String selectedDepartment = filterDepartmentComboBox.getValue();
+        String selectedPosition = filterPositionComboBox.getValue();
+
+        // Получаем полный список сотрудников из базы
+        List<Employee> allEmployees;
+        try {
+            allEmployees = employeeService.getAllEmployees();
+        } catch (SQLException e) {
+            showAlert("Ошибка", "Не удалось загрузить данные сотрудников.");
+            return;
+        }
+
+        // Фильтруем список
+        List<Employee> filteredEmployees = allEmployees.stream()
+                .filter(employee -> {
+                    boolean matchesDepartment = "Все".equals(selectedDepartment) ||
+                            employeeService.getDepartmentById(employee.getDepartmentId()).equals(selectedDepartment);
+
+                    boolean matchesPosition = "Все".equals(selectedPosition) ||
+                            employeeService.getPositionById(employee.getPositionId()).equals(selectedPosition);
+
+                    return matchesDepartment && matchesPosition;
+                })
+                .collect(Collectors.toList());
+
+        // Обновляем таблицу
+        employeeTable.setItems(FXCollections.observableArrayList(filteredEmployees));
+    }
+
+
 
     @FXML
     private void handleOpenSalaryView(ActionEvent event) throws IOException {

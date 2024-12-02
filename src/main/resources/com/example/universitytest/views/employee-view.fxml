@@ -7,6 +7,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+
 
 <HBox spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.universitytest.controllers.EmployeeController"
@@ -26,44 +29,66 @@
     </TableView>
 
     <!-- Правая часть: элементы управления -->
-    <VBox spacing="20" alignment="CENTER" styleClass="button-container" style="-fx-padding: 20;">
+    <VBox spacing="15" alignment="CENTER" styleClass="button-container" style="-fx-padding: 20;">
         <!-- Поля для ввода данных, выравнивание по центру -->
-        <VBox spacing="15" alignment="CENTER" style="-fx-padding: 20;">
-            <TextField fx:id="lastNameField" prefWidth="450" promptText="Фамилия" styleClass="text-field"/>
-            <TextField fx:id="firstNameField" prefWidth="450" promptText="Имя" styleClass="text-field"/>
-            <TextField fx:id="surnameField" prefWidth="450" promptText="Отчество" styleClass="text-field"/>
-            <TextField fx:id="baseSalaryField" prefWidth="450" promptText="Оклад" styleClass="text-field"/>
-            <TextField fx:id="yearsWorkedField" prefWidth="450" promptText="Стаж работы (лет)" styleClass="text-field"/>
-            <CheckBox fx:id="academicDegreeCheck" prefWidth="450" text="Наличие ученой степени" styleClass="check-box"/>
-        </VBox>
+        <VBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+            <TextField fx:id="lastNameField" prefWidth="400" promptText="Фамилия" styleClass="text-field"/>
+            <TextField fx:id="firstNameField" prefWidth="400" promptText="Имя" styleClass="text-field"/>
+            <TextField fx:id="surnameField" prefWidth="400" promptText="Отчество" styleClass="text-field"/>
+            <TextField fx:id="baseSalaryField" prefWidth="400" promptText="Оклад" styleClass="text-field"/>
+            <TextField fx:id="yearsWorkedField" prefWidth="400" promptText="Стаж работы (лет)" styleClass="text-field"/>
+            <CheckBox fx:id="academicDegreeCheck" prefWidth="400" text="Наличие ученой степени" styleClass="check-box"/>
 
-        <!-- Выпадающие списки -->
-        <VBox spacing="15" alignment="CENTER" style="-fx-padding: 20;">
-            <ComboBox fx:id="departmentComboBox" prefWidth="450" promptText="Кафедра" styleClass="combo-box"/>
-            <ComboBox fx:id="positionComboBox" prefWidth="450" promptText="Должность" styleClass="combo-box"/>
+            <!-- Выпадающие списки, перемещены ближе к CheckBox -->
+            <ComboBox fx:id="departmentComboBox" prefWidth="400" promptText="Кафедра" styleClass="combo-box"/>
+            <ComboBox fx:id="positionComboBox" prefWidth="400" promptText="Должность" styleClass="combo-box"/>
         </VBox>
 
         <!-- Контейнер для кнопок, выравнивание по центру -->
-        <HBox spacing="20" alignment="CENTER" style="-fx-padding: 20;">
+        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 10;">
             <!-- Первая колонка кнопок -->
-            <VBox spacing="15" alignment="CENTER">
-                <Button text="Добавить" onAction="#handleAddEmployee" styleClass="button" style="-fx-pref-width: 220px;"/>
-                <Button text="Редактировать" onAction="#loadEmployeeDataForEditing" styleClass="button" style="-fx-pref-width: 220px;"/>
+            <VBox spacing="10" alignment="CENTER">
+                <Button text="Добавить" onAction="#handleAddEmployee" styleClass="button" style="-fx-pref-width: 180px;"/>
+                <Button text="Редактировать" onAction="#loadEmployeeDataForEditing" styleClass="button" style="-fx-pref-width: 180px;"/>
             </VBox>
             <!-- Вторая колонка кнопок -->
-            <VBox spacing="15" alignment="CENTER">
-                <Button text="Сохранить изменения" onAction="#handleSaveEmployeeChanges" styleClass="button" style="-fx-pref-width: 220px;"/>
-                <Button text="Удалить" onAction="#handleDeleteEmployee" styleClass="button" style="-fx-pref-width: 220px;"/>
+            <VBox spacing="10" alignment="CENTER">
+                <Button text="Сохранить изменения" onAction="#handleSaveEmployeeChanges" styleClass="button" style="-fx-pref-width: 180px;"/>
+                <Button text="Удалить" onAction="#handleDeleteEmployee" styleClass="button" style="-fx-pref-width: 180px;"/>
             </VBox>
         </HBox>
 
         <!-- Кнопка калькулятора зарплаты внизу -->
-        <VBox spacing="15" alignment="CENTER">
-            <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button" style="-fx-pref-width: 220px;"/>
+        <VBox spacing="10" alignment="CENTER">
+            <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button" style="-fx-pref-width: 180px;"/>
+        </VBox>
+
+        <!-- ComboBox для сортировки -->
+        <VBox spacing="10" alignment="CENTER">
+            <ComboBox fx:id="sortComboBox" onAction="#handleSortEmployees" promptText="Сортировать" prefWidth="250">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="По фамилии" />
+                        <String fx:value="По зарплате" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </VBox>
+
+        <!-- Фильтры: два списка в одном горизонтальном ряду -->
+        <VBox spacing="10" alignment="CENTER">
+            <HBox spacing="15" alignment="CENTER">
+                <ComboBox fx:id="filterDepartmentComboBox" onAction="#handleFilterEmployees"
+                          promptText="Фильтр по кафедрам" prefWidth="180" />
+                <ComboBox fx:id="filterPositionComboBox" onAction="#handleFilterEmployees"
+                          promptText="Фильтр по должностям" prefWidth="180" />
+            </HBox>
+            <Button text="Сбросить фильтры" onAction="#resetFilters" style="-fx-pref-width: 250px;"/>
         </VBox>
     </VBox>
-
 </HBox>
+
+
 
 
 <!--<ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
