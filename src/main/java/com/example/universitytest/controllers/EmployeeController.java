@@ -396,6 +396,8 @@ public class EmployeeController {
         if (selectedEmployee != null) {
             employeeService.removeEmployee(selectedEmployee.getId());
             employeeList.remove(selectedEmployee);
+            //handleUpdateEmployee();
+            updateEmployeeTable();
         } else {
             showAlert("Ошибка", "Выберите сотрудника для удаления");
         }

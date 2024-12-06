@@ -49,16 +49,42 @@ public class EmployeeService {
 
     // Метод для удаления сотрудника по ID
     public boolean removeEmployee(int id) {
-        String query = "DELETE FROM employees WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, id);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+        //String deleteDeductionsQuery = "DELETE FROM deductions WHERE employee_id = ?";
+        String deleteEmployeeQuery = "DELETE FROM employees WHERE id = ?";
+
+        try {
+            connection.setAutoCommit(false); // Начало транзакции
+
+            // Удаление записей из deductions
+            /*try (PreparedStatement stmt1 = connection.prepareStatement(deleteDeductionsQuery)) {
+                stmt1.setInt(1, id);
+                stmt1.executeUpdate();
+            }*/
+
+            // Удаление записи сотрудника
+            try (PreparedStatement stmt2 = connection.prepareStatement(deleteEmployeeQuery)) {
+                stmt2.setInt(1, id);
+                int rowsAffected = stmt2.executeUpdate();
+                connection.commit(); // Фиксация транзакции
+                return rowsAffected > 0;
+            }
         } catch (SQLException e) {
+            try {
+                connection.rollback(); // Откат транзакции в случае ошибки
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            try {
+                connection.setAutoCommit(true); // Возврат автокоммита
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
+
 
     public List<Employee> getAllEmployees() throws SQLException {
         List<Employee> employeeList = new ArrayList<>();

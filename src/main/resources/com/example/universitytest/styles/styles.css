@@ -1,147 +1,112 @@
 /* Общие стили */
-.button, .text-field, .combo-box, .check-box {
-    -fx-padding: 0 10px; /* Общий padding */
+.root {
+    -fx-background-color: #E6E0DA; /* Светлый нейтральный фон */
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
 }
 
 /* Стили для кнопок */
 .button {
-    -fx-background-color: #ffccd5; /* Нежно-розовый цвет */
-    -fx-text-fill: #000000; /* Черный текст */
+    -fx-background-color: #067736; /* Синий цвет кнопок */
+    -fx-text-fill: #FFFFFF; /* Белый текст */
     -fx-font-size: 14px;
-    -fx-padding: 10px;
-    -fx-background-radius: 5px;
-    -fx-border-color: #ff99ac; /* Цвет границы немного темнее */
-    -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 5, 0, 0, 5);
+    -fx-pref-height: 40px; /* Высота кнопок */
+    -fx-background-radius: 8px; /* Округлённые углы */
+    -fx-border-color: transparent; /* Без рамки */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 4, 0, 0, 2);
     -fx-cursor: hand;
 }
 
 .button:hover {
-    -fx-opacity: 0.9;
-    -fx-border-width: 1px 3px 1px 1px;
+    -fx-background-color: #357ABD; /* Более насыщенный цвет при наведении */
 }
 
 .button:pressed {
-    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.7), 7, 0, 0, 2);
+    -fx-background-color: #2B5D94; /* Тёмно-синий при нажатии */
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 6, 0, 0, 2);
 }
 
-/* Стили для блока кнопок (горизонтальный контейнер) */
-.button-container {
-    -fx-padding: 0 10px; /* Внешний отступ для блока */
-    -fx-spacing: 10px; /* Расстояние между кнопками */
-    -fx-alignment: center; /* Выравнивание по центру */
-    -fx-background-color: transparent;
-    -fx-orientation: horizontal; /* Горизонтальная ориентация */
+/* Кнопка "Калькулятор зарплаты" */
+.button-calc {
+    -fx-pref-width: 140px; /* Ширина кнопки как у других кнопок управления */
 }
 
 /* Стили для текстовых полей */
 .text-field {
-    -fx-border-color: #3a3a3a;
+    -fx-border-color: #DADADA; /* Светло-серая граница */
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
+    -fx-background-color: #FFFFFF; /* Белый фон */
     -fx-font-size: 14px;
-    -fx-padding: 10px;
-    -fx-pref-width: 450px; /* Абсолютная ширина */
-    -fx-min-width: 450px;
-    -fx-max-width: 450px;
+    -fx-padding: 8px;
+    -fx-pref-width: 220px; /* Ширина текстовых полей */
 }
-
 
 /* Стили для выпадающих списков */
 .combo-box {
-    -fx-border-color: #3a3a3a;
+    -fx-border-color: #DADADA;
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
+    -fx-background-color: #FFFFFF;
     -fx-font-size: 14px;
-    -fx-padding: 10px;
-    -fx-pref-height: 20;
+    -fx-padding: 8px;
+    -fx-pref-width: 220px; /* Ширина выпадающих списков */
+    -fx-pref-height: 35px;
 }
 
-.combo-box .combo-box-popup {
-    -fx-background-color: white;
-    -fx-border-color: #3a3a3a;
-    -fx-border-radius: 5px;
+.combo-box.filter {
+    -fx-pref-width: 140px; /* Индивидуальная ширина для фильтров */
 }
 
-.combo-box .arrow {
-    -fx-background-color: #3a3a3a;
-}
-
-/* Общие стили для CheckBox */
+/* Стили для чекбоксов */
 .check-box {
-    -fx-background-color: transparent;
-    -fx-padding: 0 10px;
-    -fx-border-color: transparent;
-    -fx-cursor: hand;
-    -fx-alignment: center-left; /* Выравнивание текста относительно кнопки */
+    -fx-padding: 0 8px;
     -fx-font-size: 14px;
+    -fx-cursor: hand;
 }
 
-/* Кастомизация коробки чекбокса */
 .check-box .box {
-    -fx-background-color: #9098A9; /* Цвет выключенного чекбокса */
-    -fx-border-color: #9098A9;
+    -fx-background-color: #DADADA;
+    -fx-border-color: #DADADA;
     -fx-border-radius: 3px;
-    -fx-min-width: 18px;
-    -fx-min-height: 18px;
-    -fx-max-width: 18px;
-    -fx-max-height: 18px;
-    -fx-padding: 2px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 2, 0.5, 0, 0);
-    -fx-transition: all 0.3s ease;
+    -fx-min-width: 16px;
+    -fx-min-height: 16px;
 }
 
-/* Активное состояние чекбокса */
 .check-box:selected .box {
-    -fx-background-color: #ff99ac; /* Цвет активного чекбокса */
-    -fx-border-color: #ff99ac;
-    -fx-effect: dropshadow(gaussian, rgba(50, 205, 50, 0.5), 2, 0.5, 0, 0);
-}
-
-/* Положение галочки */
-.check-box .box > .mark {
-    -fx-background-color: white; /* Цвет галочки */
-    -fx-background-radius: 50%;
-    -fx-min-width: 10px;
-    -fx-min-height: 10px;
-    -fx-max-width: 10px;
-    -fx-max-height: 10px;
-    -fx-transition: all 0.3s ease-in-out;
+    -fx-background-color: #067736; /* Цвет выделенного чекбокса */
+    -fx-border-color: #4A90E2;
 }
 
 /* Стили для таблицы */
 .table-view {
-    -fx-background-color: #f0f0f0;
-    -fx-table-cell-border-color: transparent;
+    -fx-background-color: #FFFFFF; /* Белый фон */
+    -fx-table-cell-border-color: #E0E0E0; /* Светло-серая граница ячеек */
+    -fx-pref-width: 900px; /* Ширина таблицы */
 }
 
 .table-view .cell {
-    -fx-background-color: #ffffff; /* Белый фон */
-    -fx-text-fill: #000000; /* Черный текст */
-}
-
-.table-column-header {
-    -fx-background-color: #ffccd5;
-    -fx-text-fill: #ffffff;
+    -fx-background-color: #FFFFFF; /* Белый фон */
+    -fx-text-fill: #333333; /* Тёмно-серый текст */
     -fx-font-size: 14px;
 }
 
-/* Стили для VBox, содержащего элементы под таблицей */
-.v-box.content {
-    -fx-padding: 20px 40px 20px 40px; /* Внешние отступы: сверху, справа, снизу, слева */
-    -fx-spacing: 10px; /* Расстояние между элементами */
-    -fx-background-color: transparent; /* Если нужен прозрачный фон */
+.table-column-header {
+    -fx-background-color: #E6E0DA; /* Тёмно-синий заголовок */
+    -fx-text-fill: #FFFFFF; /* Белый текст */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 5px;
 }
 
-
-/* Стили для основной VBox (без изменений для таблицы) */
+/* Контейнеры */
 .v-box {
-    -fx-padding: 0;
-    -fx-spacing: 10px;
-    -fx-background-color: #f0e6f6;
+    -fx-padding: 10px 20px; /* Оптимальные отступы */
+    -fx-spacing: 8px; /* Расстояние между элементами */
+    -fx-background-color: transparent;
 }
 
-/* Стили для корневого контейнера */
-.root {
-    -fx-background-color: #f0e6f6;
+.h-box {
+    -fx-spacing: 10px;
+    -fx-alignment: center;
 }
