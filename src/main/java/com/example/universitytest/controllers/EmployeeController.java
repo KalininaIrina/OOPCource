@@ -200,11 +200,19 @@ public class EmployeeController {
                 firstNameField.clear();
                 lastNameField.clear();
                 surnameField.clear();
+
                 positionComboBox.getSelectionModel().clearSelection();
+                positionComboBox.setValue(null);
+                positionComboBox.setPromptText("Должность");
+
                 departmentComboBox.getSelectionModel().clearSelection();
+                departmentComboBox.setValue(null);
+                departmentComboBox.setPromptText("Кафедра");
+
                 baseSalaryField.clear();
                 yearsWorkedField.clear();
                 academicDegreeCheck.setSelected(false);
+
 
             } catch (NumberFormatException e) {
                 showAlert("Ошибка", "Пожалуйста, введите корректные значения для оклада и стажа.");
@@ -323,11 +331,14 @@ public class EmployeeController {
                 updateEmployeeTable();
 
                 // Очищаем все поля
+                // Очищаем все поля
                 firstNameField.clear();
                 lastNameField.clear();
                 surnameField.clear();
                 positionComboBox.getSelectionModel().clearSelection();
+                positionComboBox.setPromptText("Выберите должность"); // Устанавливаем дефолтное значение
                 departmentComboBox.getSelectionModel().clearSelection();
+                departmentComboBox.setPromptText("Выберите отдел");  // Устанавливаем дефолтное значение
                 baseSalaryField.clear();
                 yearsWorkedField.clear();
                 academicDegreeCheck.setSelected(false);
