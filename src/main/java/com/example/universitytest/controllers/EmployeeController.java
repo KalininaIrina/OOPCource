@@ -131,15 +131,6 @@ public class EmployeeController {
     }
 
 
-    /*private void loadDepartments() {
-        List<String> departments = employeeService.getAllDepartments(); // Метод из сервиса
-        if (departments != null && !departments.isEmpty()) {
-            departmentComboBox.getItems().addAll(departments); // Добавляем данные в ComboBox
-        } else {
-            System.out.println("Список отделов пуст или не загружен.");
-        }
-    }*/
-
     private void loadDepartments() {
         List<String> departments = employeeService.getAllDepartments(); // Метод для получения всех отделов
         ObservableList<String> departmentList = FXCollections.observableArrayList(departments);
