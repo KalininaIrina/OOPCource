@@ -338,14 +338,6 @@ public class EmployeeController {
     }
 
 
-    /*private void updateEmployeeTable() {
-        try {
-            List<Employee> updatedEmployees = employeeService.getAllEmployees();  // Получаем актуальный список сотрудников
-            employeeTable.setItems(FXCollections.observableList(updatedEmployees));  // Перезагружаем таблицу
-        } catch (SQLException e) {
-            showAlert("Ошибка", "Не удалось обновить данные таблицы сотрудников.");
-        }
-    }*/
 
 
 
