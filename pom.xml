@@ -72,7 +72,7 @@
           <execution>
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.example.universitytest.HelloApplication</mainClass> <!-- Обновите путь к классу -->
+              <mainClass>com.example.universitytest.HelloApplication</mainClass>
             </configuration>
           </execution>
         </executions>

@@ -9,6 +9,7 @@ import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class SalaryCalculator {
     private int totalSalary; // Убрали final
@@ -82,13 +83,26 @@ public class SalaryCalculator {
             throw new IllegalStateException("Сотрудника не существует");
         }
 
+        // Получение информации о сотруднике
         String positionName = employeeService.getPositionById(employee.getPositionId());
-
         double baseSalary = employee.getBaseSalary();
         double allowances = calculateAllowances(hoursWorked, true);
         double deductions = calculateDeductions();
         double totalSalary = round(baseSalary + allowances - deductions, 2);
 
+        // Сохранение отчета в таблицу salary_reports
+        try {
+            employeeService.addSalaryReport(
+                    employee.getId(),                // ID сотрудника
+                    totalSalary,                     // Итоговая зарплата
+                    new Timestamp(System.currentTimeMillis()) // Текущая дата и время
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Не удалось сохранить отчет по зарплате в базе данных.");
+        }
+
+        // Формирование текста отчета
         return new StringBuilder()
                 .append("Отчет по заработной плате для сотрудника: ")
                 .append(employee.getLastName()).append(" ").append(employee.getFirstName()).append(" ").append(employee.getSurname()).append("\n")
@@ -101,6 +115,7 @@ public class SalaryCalculator {
                 .append("Итоговая зарплата: ").append(totalSalary).append("\n")
                 .toString();
     }
+
 
     private boolean isLecturer() {
         if (employeeService == null) {

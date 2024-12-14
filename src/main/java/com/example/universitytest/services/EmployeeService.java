@@ -314,6 +314,51 @@ public class EmployeeService {
         return -1;  // Возвращаем -1, если департамент не найден
     }
 
+    // Метод для добавления записи в таблицу salary_reports
+    public void addSalaryReport(int employeeId, double netSalary, Timestamp reportDate) {
+        String query = "INSERT INTO salary_reports (employee_id, net_salary, report_date) VALUES (?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, employeeId);
+            stmt.setDouble(2, netSalary);
+            stmt.setTimestamp(3, reportDate);
+
+            stmt.executeUpdate(); // Вставляем запись в таблицу salary_reports
+            System.out.println("Отчет по зарплате успешно добавлен для сотрудника ID: " + employeeId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String generateYearlyReport(int employeeId, int year) {
+        String query = "SELECT SUM(total_salary) AS yearly_salary, COUNT(*) AS report_count " +
+                "FROM salary_reports " +
+                "WHERE employee_id = ? AND YEAR(report_date) = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, employeeId);
+            stmt.setInt(2, year);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    double yearlySalary = rs.getDouble("yearly_salary");
+                    int reportCount = rs.getInt("report_count");
+
+                    return new StringBuilder()
+                            .append("Годовой отчет за ").append(year).append(" год\n")
+                            .append("Сотрудник ID: ").append(employeeId).append("\n")
+                            .append("Количество отчетов: ").append(reportCount).append("\n")
+                            .append("Общая зарплата за год: ").append(yearlySalary).append("\n")
+                            .toString();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Ошибка при генерации годового отчета.";
+        }
+
+        return "Отчеты за указанный год не найдены.";
+    }
+
 
 
     // Метод для создания отчета по всем сотрудникам

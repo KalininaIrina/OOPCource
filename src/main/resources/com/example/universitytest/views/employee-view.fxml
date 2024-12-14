@@ -9,6 +9,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 
 
@@ -55,6 +56,8 @@
 
         <!-- Кнопка калькулятора зарплаты -->
         <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button" prefWidth="200"/>
+        <Button text="Годовой отчет" onAction="#onGenerateYearlyReportClicked" />
+
 
         <!-- Сортировка -->
         <ComboBox fx:id="sortComboBox" onAction="#handleSortEmployees" promptText="Сортировать" prefWidth="220">
@@ -78,7 +81,5 @@
         </VBox>
     </VBox>
 </HBox>
-
-
-<!--<ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
-            <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Должность" styleClass="combo-box"/>-->
+        <!--<ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
+                    <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Должность" styleClass="combo-box"/>-->

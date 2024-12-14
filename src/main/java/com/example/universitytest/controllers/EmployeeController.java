@@ -20,7 +20,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import javafx.stage.Modality;
+import javafx.scene.layout.VBox;
 
 public class EmployeeController {
     @FXML
@@ -339,9 +342,6 @@ public class EmployeeController {
 
 
 
-
-
-
     @FXML
     private void handleUpdateEmployee() throws SQLException {
         Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
@@ -473,6 +473,51 @@ public class EmployeeController {
 
         // Обновляем таблицу
         employeeTable.setItems(FXCollections.observableArrayList(filteredEmployees));
+    }
+
+    @FXML
+    private void onGenerateYearlyReportClicked() {
+        // Проверяем, выбран ли сотрудник
+        Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
+        if (selectedEmployee == null) {
+            showAlert("Ошибка", "Сотрудник не выбран", Alert.AlertType.ERROR);
+            return;
+        }
+
+        // Запрашиваем год у пользователя
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Годовой отчет");
+        dialog.setHeaderText("Введите год для формирования отчета:");
+        dialog.setContentText("Год:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            try {
+                int year = Integer.parseInt(result.get());
+                String report = employeeService.generateYearlyReport(selectedEmployee.getId(), year);
+                showReportInModal(report);
+            } catch (NumberFormatException e) {
+                showAlert("Ошибка", "Неверный формат года", Alert.AlertType.ERROR);
+            }
+        }
+    }
+
+    private void showAlert(String title, String content, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showReportInModal(String report) {
+        TextArea textArea = new TextArea(report);
+        textArea.setEditable(false);
+
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Годовой отчет");
+        modalStage.setScene(new Scene(new VBox(textArea), 400, 300));
+        modalStage.show();
     }
 
 
