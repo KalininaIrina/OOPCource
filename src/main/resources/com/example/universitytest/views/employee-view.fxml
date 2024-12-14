@@ -27,9 +27,10 @@
             fx:controller="com.example.universitytest.controllers.EmployeeController">
 
     <!-- Верхняя панель: MenuBar -->
+    <!-- Верхняя панель: MenuBar -->
     <top>
-        <MenuBar>
-            <Menu text="Редактировать">
+        <MenuBar styleClass="menu-bar">
+            <Menu text="Редактировать" styleClass="menu">
                 <MenuItem text="Добавить" onAction="#handleAddEmployee"/>
                 <MenuItem text="Редактировать" onAction="#loadEmployeeDataForEditing"/>
                 <MenuItem text="Сохранить изменения" onAction="#handleSaveEmployeeChanges"/>
@@ -40,46 +41,46 @@
                 <SeparatorMenuItem/>
                 <MenuItem text="Фильтр по кафедре" onAction="#handleFilterByDepartment"/>
                 <MenuItem text="Фильтр по должности" onAction="#handleFilterByPosition"/>
-                <MenuItem text="Сбросиь фильтры" onAction="#resetFilters"/>
+                <MenuItem text="Сбросить фильтры" onAction="#resetFilters"/>
             </Menu>
 
-            <Menu text="Отчёты">
+            <Menu text="Отчёты" styleClass="menu">
                 <MenuItem text="Калькулятор зарплаты" onAction="#handleOpenSalaryView"/>
                 <MenuItem text="Годовой отчёт" onAction="#onGenerateYearlyReportClicked"/>
                 <MenuItem text="Отчёт по кафедре" onAction="#onGenerateDepartmentReportClicked"/>
             </Menu>
-
         </MenuBar>
     </top>
+
 
     <!-- Центральная часть: текущий интерфейс -->
     <center>
         <HBox spacing="20" style="-fx-padding: 20;">
             <!-- Левая часть: таблица -->
-            <TableView fx:id="employeeTable" prefWidth="600">
+            <TableView fx:id="employeeTable" prefWidth="900">
                 <columns>
-                    <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-                    <TableColumn fx:id="lastNameColumn" text="Фамилия"/>
-                    <TableColumn fx:id="firstNameColumn" text="Имя"/>
-                    <TableColumn fx:id="surnameColumn" text="Отчество"/>
-                    <TableColumn fx:id="departmentColumn" text="Кафедра"/>
-                    <TableColumn fx:id="positionColumn" text="Должность"/>
-                    <TableColumn fx:id="baseSalaryColumn" text="Оклад"/>
+                    <TableColumn fx:id="idColumn" text="ID" styleClass="table-column-header" prefWidth="50"/>
+                    <TableColumn fx:id="lastNameColumn" text="Фамилия" styleClass="table-column-header" prefWidth="110"/>
+                    <TableColumn fx:id="firstNameColumn" text="Имя" styleClass="table-column-header" prefWidth="110"/>
+                    <TableColumn fx:id="surnameColumn" text="Отчество" styleClass="table-column-header" prefWidth="140"/>
+                    <TableColumn fx:id="departmentColumn" text="Кафедра" styleClass="table-column-header" prefWidth="220"/>
+                    <TableColumn fx:id="positionColumn" text="Должность" styleClass="table-column-header" prefWidth="175"/>
+                    <TableColumn fx:id="baseSalaryColumn" text="Оклад" styleClass="table-column-header" prefWidth="90"/>
                 </columns>
             </TableView>
 
             <!-- Правая часть: элементы управления -->
-            <VBox spacing="20" alignment="CENTER">
+            <VBox spacing="20" alignment="CENTER" style="-fx-padding: 0 0 0 90;">
                 <!-- Поля ввода -->
                 <VBox spacing="10" alignment="CENTER">
-                    <TextField fx:id="lastNameField" prefWidth="240" promptText="Фамилия" styleClass="text-field"/>
-                    <TextField fx:id="firstNameField" prefWidth="240" promptText="Имя" styleClass="text-field"/>
-                    <TextField fx:id="surnameField" prefWidth="240" promptText="Отчество" styleClass="text-field"/>
-                    <TextField fx:id="baseSalaryField" prefWidth="240" promptText="Оклад" styleClass="text-field"/>
-                    <TextField fx:id="yearsWorkedField" prefWidth="240" promptText="Стаж работы (лет)" styleClass="text-field"/>
+                    <TextField fx:id="lastNameField" prefWidth="350" promptText="Фамилия" styleClass="text-field"/>
+                    <TextField fx:id="firstNameField" prefWidth="350" promptText="Имя" styleClass="text-field"/>
+                    <TextField fx:id="surnameField" prefWidth="350" promptText="Отчество" styleClass="text-field"/>
+                    <TextField fx:id="baseSalaryField" prefWidth="350" promptText="Оклад" styleClass="text-field"/>
+                    <TextField fx:id="yearsWorkedField" prefWidth="350" promptText="Стаж работы (лет)" styleClass="text-field"/>
                     <CheckBox fx:id="academicDegreeCheck" text="Наличие ученой степени" styleClass="check-box"/>
-                    <ComboBox fx:id="departmentComboBox" prefWidth="240" promptText="Кафедра" styleClass="combo-box"/>
-                    <ComboBox fx:id="positionComboBox" prefWidth="240" promptText="Должность" styleClass="combo-box"/>
+                    <ComboBox fx:id="departmentComboBox" prefWidth="350" promptText="Кафедра" styleClass="combo-box"/>
+                    <ComboBox fx:id="positionComboBox" prefWidth="350" promptText="Должность" styleClass="combo-box"/>
                 </VBox>
                 <!-- Кнопки -->
                 <VBox spacing="10" alignment="CENTER">

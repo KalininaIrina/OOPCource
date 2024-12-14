@@ -5,6 +5,75 @@
     -fx-spacing: 15px;
 }
 
+/* Стили для меню бара */
+.menu-bar {
+    -fx-background-color: #E6E0DA; /* Светлый фон */
+    -fx-border-color: #FFFFFF; /* Белая обводка */
+    -fx-border-width: 2px; /* Толщина обводки */
+    -fx-padding: 10px; /* Отступы */
+    -fx-background-radius: 15px; /* Скругленные углы */
+    -fx-border-radius: 15px; /* Скругленные углы для обводки */
+}
+
+/* Стили для меню */
+.menu {
+    -fx-background-color: #067736; /* Темный фон для меню */
+    -fx-text-fill: #FFFFFF; /* Белый текст */
+    -fx-font-size: 14px;
+    -fx-padding: 8px;
+    -fx-background-radius: 10px; /* Скругленные углы */
+}
+
+/* Стили для элементов меню */
+.menu-item {
+    -fx-text-fill: #FFFFFF !important; /* Белый текст с наивысшим приоритетом */
+    -fx-background-color: #FFFFFF; /* Темно-зеленый фон */
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px; /* Отступы */
+    -fx-background-radius: 10px; /* Скругленные углы */
+}
+
+.menu .label{
+    -fx-text-fill: #FFFFFF;
+}
+.menu .menu-item .label{
+    -fx-text-fill: #000000;
+}
+
+.menu .menu-item:hover .label{
+    -fx-text-fill: #FFFFFF;
+}
+
+/* Устанавливаем hover стили для элементов меню */
+.menu .menu-item:hover {
+    -fx-background-color: #045F2C; /* Темно-зеленый цвет при наведении */
+    -fx-text-fill: #000000 !important; /* Черный текст при наведении */
+    -fx-cursor: hand; /* Указатель при наведении */
+}
+
+/* Стили для разделителей меню */
+.separator {
+    -fx-background-color: #DADADA; /* Светло-серый разделитель */
+    -fx-padding: 2px;
+}
+
+/* Стили для подменю (submenu) */
+.submenu {
+    -fx-background-color: #34495E; /* Темный фон для подменю */
+    -fx-border-color: #FFFFFF; /* Белая обтовка */
+    -fx-padding: 5px; /* Отступы */
+    -fx-background-radius: 10px; /* Скругленные углы */
+    -fx-border-radius: 10px; /* Скругленные углы для обводки */
+    -fx-text-fill: #FFFFFF; /* Белый текст */
+}
+
+/* Явно указываем цвет текста для всех элементов внутри меню бара */
+.menu-bar .menu, .menu-bar .menu-item, .menu-bar .submenu:hover {
+    -fx-text-fill: #000000 !important; /* Черный текст при наведении */
+}
+
+
+
 /* Стили для кнопок */
 .button {
     -fx-background-color: #067736; /* Синий цвет кнопок */
@@ -18,11 +87,11 @@
 }
 
 .button:hover {
-    -fx-background-color: #357ABD; /* Более насыщенный цвет при наведении */
+    -fx-background-color: #4A90E2; /* Более насыщенный цвет при наведении */
 }
 
 .button:pressed {
-    -fx-background-color: #2B5D94; /* Тёмно-синий при нажатии */
+    -fx-background-color: #4A90E2; /* Тёмно-синий при нажатии */
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 6, 0, 0, 2);
 }
 
@@ -39,7 +108,7 @@
     -fx-background-color: #FFFFFF; /* Белый фон */
     -fx-font-size: 14px;
     -fx-padding: 8px;
-    -fx-pref-width: 220px; /* Ширина текстовых полей */
+    -fx-pref-width: 350px; /* Ширина текстовых полей */
 }
 
 /* Стили для выпадающих списков */
