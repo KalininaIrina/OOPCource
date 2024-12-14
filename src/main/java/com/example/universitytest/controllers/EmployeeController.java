@@ -7,6 +7,7 @@ import com.example.universitytest.database.DatabaseConnection;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.stage.Modality;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.TitledPane;
 
 public class EmployeeController {
     @FXML
@@ -87,51 +89,75 @@ public class EmployeeController {
 
     @FXML
     public void initialize() {
+        // Инициализация колонок таблицы
         idColumn.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         firstNameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
         lastNameColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
         surnameColumn.setCellValueFactory(cellData -> cellData.getValue().surnameProperty());
 
-        // Получаем все должности из базы данных
-        ObservableList<String> positionList = FXCollections.observableArrayList(employeeService.getAllPositions());
-        positionComboBox.setItems(positionList); // Устанавливаем должности в ComboBox
+        // Инициализация должностей
+        List<String> positions = employeeService.getAllPositions();
+        if (positions != null && !positions.isEmpty()) {
+            ObservableList<String> positionList = FXCollections.observableArrayList(positions);
+            positionComboBox.setItems(positionList);
+        } else {
+            positionComboBox.setItems(FXCollections.observableArrayList("Все")); // Принудительное значение "Все"
+            showAlert("Ошибка", "Нет доступных должностей.");
+        }
+
         positionColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(employeeService.getPositionById(cellData.getValue().getPositionId())));
-        //loadDepartments();
-        ObservableList<String> departmentList = FXCollections.observableArrayList(employeeService.getAllDepartments());
-        departmentComboBox.setItems(departmentList);
+
+        // Инициализация кафедр
+        List<String> departments = employeeService.getAllDepartments();
+        if (departments != null && !departments.isEmpty()) {
+            ObservableList<String> departmentList = FXCollections.observableArrayList(departments);
+            departmentComboBox.setItems(departmentList);
+        } else {
+            departmentComboBox.setItems(FXCollections.observableArrayList("Все")); // Принудительное значение "Все"
+            showAlert("Ошибка", "Нет доступных кафедр.");
+        }
+
         departmentColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(employeeService.getDepartmentById(cellData.getValue().getDepartmentId())));
+
         baseSalaryColumn.setCellValueFactory(cellData -> cellData.getValue().baseSalaryProperty().asObject());
 
         positionComboBox.setEditable(true);
         departmentComboBox.setEditable(true);
 
-        // Заполняем список сотрудников из базы данных
-        employeeList.addAll(employeeService.getEmployees());
+        // Загрузка сотрудников из базы данных
+        List<Employee> employees = employeeService.getEmployees();
+        if (employees.isEmpty()) {
+            showAlert("Ошибка", "Нет доступных сотрудников для отображения.");
+        } else {
+            employeeList.addAll(employees);
+        }
         employeeTable.setItems(employeeList);
 
-        // Инициализируем ComboBox
-        sortComboBox.getItems().clear();
-        sortComboBox.getItems().addAll("По фамилии", "По зарплате");
-        //sortComboBox.setValue("По фамилии"); // Значение по умолчанию
+        // Инициализация ComboBox для сортировки
+        /*sortComboBox.getItems().clear();
+        sortComboBox.getItems().addAll("По фамилии", "По зарплате");*/
 
-        initializeFilters();
+        // Инициализация фильтров
+        //initializeFilters();
+
     }
 
-    private void initializeFilters() {
+
+
+    /*private void initializeFilters() {
         // Заполняем ComboBox кафедрами
         List<String> departments = employeeService.getAllDepartments();
-        departments.add(0, "Все"); // Добавляем опцию "Все" для сброса фильтра
+        departments.add(0, "Все");
         filterDepartmentComboBox.setItems(FXCollections.observableArrayList(departments));
-        //filterDepartmentComboBox.setValue("Все");
 
         // Заполняем ComboBox должностями
         List<String> positions = employeeService.getAllPositions();
-        positions.add(0, "Все"); // Добавляем опцию "Все" для сброса фильтра
+        positions.add(0, "Все");
         filterPositionComboBox.setItems(FXCollections.observableArrayList(positions));
-        //filterPositionComboBox.setValue("Все");
-    }
+    }*/
+
 
 
     private void loadDepartments() {
@@ -437,14 +463,50 @@ public class EmployeeController {
     }
 
     @FXML
-    private void resetFilters() {
-        filterDepartmentComboBox.setValue("Все");
-        filterPositionComboBox.setValue("Все");
-        updateEmployeeTable(); // Перезагружаем всех сотрудников
+    private void handleSortByLastName() {
+        ObservableList<Employee> employeeList = employeeTable.getItems();
+
+        if (employeeList == null || employeeList.isEmpty()) {
+            showAlert("Ошибка", "Нет данных для сортировки.");
+            return;
+        }
+
+        // Сортировка по фамилии
+        employeeList.sort(Comparator.comparing(Employee::getLastName, String.CASE_INSENSITIVE_ORDER));
+        employeeTable.refresh();
+    }
+
+    @FXML
+    private void handleSortBySalary() {
+        ObservableList<Employee> employeeList = employeeTable.getItems();
+
+        if (employeeList == null || employeeList.isEmpty()) {
+            showAlert("Ошибка", "Нет данных для сортировки.");
+            return;
+        }
+
+        // Сортировка по зарплате
+        employeeList.sort(Comparator.comparingDouble(Employee::getBaseSalary));
+        employeeTable.refresh();
     }
 
 
     @FXML
+    private void resetFilters() {
+        // Сбрасываем фильтры по кафедре и должности
+        //filterDepartmentComboBox.setValue("Все");
+        //filterPositionComboBox.setValue("Все");
+
+        // Сбрасываем сортировку
+        //sortComboBox.setValue(null);
+
+        // Перезагружаем все сотрудники в таблицу
+        updateEmployeeTable();
+    }
+
+
+
+    /*@FXML
     private void handleFilterEmployees() {
         String selectedDepartment = filterDepartmentComboBox.getValue();
         String selectedPosition = filterPositionComboBox.getValue();
@@ -473,7 +535,146 @@ public class EmployeeController {
 
         // Обновляем таблицу
         employeeTable.setItems(FXCollections.observableArrayList(filteredEmployees));
+    }*/
+
+
+    @FXML
+    private void handleFilterByDepartment() {
+        // Создаем окно с выпадающим списком кафедр
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Фильтрация по кафедре");
+        dialog.setHeaderText("Выберите кафедру для фильтрации:");
+
+        // ComboBox с кафедрами
+        ComboBox<String> filterDepartmentComboBox = new ComboBox<>();
+        filterDepartmentComboBox.getItems().add("Все"); // Добавляем опцию "Все"
+
+        // Загружаем кафедры из базы данных
+        List<String> departments = employeeService.getAllDepartments();
+        if (departments == null || departments.isEmpty()) {
+            showAlert("Ошибка", "Нет доступных кафедр для фильтрации.");
+            return;
+        }
+        filterDepartmentComboBox.getItems().addAll(departments);
+        filterDepartmentComboBox.setValue("Все");
+
+        // Добавляем ComboBox в диалог
+        VBox content = new VBox(10);
+        content.setAlignment(Pos.CENTER);
+        content.getChildren().add(filterDepartmentComboBox);
+        dialog.getDialogPane().setContent(content);
+
+        // Кнопки ОК и Отмена
+        ButtonType okButtonType = new ButtonType("Применить", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        // Обрабатываем результат
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == okButtonType) {
+                return filterDepartmentComboBox.getValue();
+            }
+            return null;
+        });
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(this::applyDepartmentFilter);
     }
+
+
+
+    // Применяем фильтр по кафедре
+    private void applyDepartmentFilter(String department) {
+        // Загружаем всех сотрудников
+        List<Employee> allEmployees;
+        try {
+            allEmployees = employeeService.getAllEmployees();
+            if (allEmployees == null || allEmployees.isEmpty()) {
+                showAlert("Ошибка", "Нет доступных сотрудников для фильтрации.");
+                return;
+            }
+        } catch (SQLException e) {
+            showAlert("Ошибка", "Не удалось загрузить данные сотрудников.");
+            return;
+        }
+
+        // Фильтрация по кафедре
+        List<Employee> filteredEmployees = allEmployees.stream()
+                .filter(employee -> "Все".equals(department) ||
+                        employeeService.getDepartmentById(employee.getDepartmentId()).equals(department))
+                .collect(Collectors.toList());
+
+        // Обновляем таблицу
+        employeeTable.setItems(FXCollections.observableArrayList(filteredEmployees));
+    }
+
+    @FXML
+    private void handleFilterByPosition() {
+        // Создаем окно с выпадающим списком должностей
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Фильтрация по должности");
+        dialog.setHeaderText("Выберите должность для фильтрации:");
+
+        // ComboBox с должностями
+        ComboBox<String> filterPositionComboBox = new ComboBox<>();
+        filterPositionComboBox.getItems().add("Все"); // Добавляем опцию "Все"
+
+        // Загружаем должности из базы данных
+        List<String> positions = employeeService.getAllPositions();
+        if (positions == null || positions.isEmpty()) {
+            showAlert("Ошибка", "Нет доступных должностей для фильтрации.");
+            return;
+        }
+        filterPositionComboBox.getItems().addAll(positions);
+        filterPositionComboBox.setValue("Все");
+
+        // Добавляем ComboBox в диалог
+        VBox content = new VBox(10);
+        content.setAlignment(Pos.CENTER);
+        content.getChildren().add(filterPositionComboBox);
+        dialog.getDialogPane().setContent(content);
+
+        // Кнопки ОК и Отмена
+        ButtonType okButtonType = new ButtonType("Применить", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        // Обрабатываем результат
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == okButtonType) {
+                return filterPositionComboBox.getValue();
+            }
+            return null;
+        });
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(this::applyPositionFilter);
+    }
+
+
+    // Применяем фильтр по должности
+    private void applyPositionFilter(String position) {
+        // Загружаем всех сотрудников
+        List<Employee> allEmployees;
+        try {
+            allEmployees = employeeService.getAllEmployees();
+            if (allEmployees == null || allEmployees.isEmpty()) {
+                showAlert("Ошибка", "Нет доступных сотрудников для фильтрации.");
+                return;
+            }
+        } catch (SQLException e) {
+            showAlert("Ошибка", "Не удалось загрузить данные сотрудников.");
+            return;
+        }
+
+        // Фильтрация по должности
+        List<Employee> filteredEmployees = allEmployees.stream()
+                .filter(employee -> "Все".equals(position) ||
+                        employeeService.getPositionById(employee.getPositionId()).equals(position))
+                .collect(Collectors.toList());
+
+        // Обновляем таблицу
+        employeeTable.setItems(FXCollections.observableArrayList(filteredEmployees));
+    }
+
 
     @FXML
     private void onGenerateYearlyReportClicked() {
@@ -495,12 +696,47 @@ public class EmployeeController {
             try {
                 int year = Integer.parseInt(result.get());
                 String report = employeeService.generateYearlyReport(selectedEmployee.getId(), year);
-                showReportInModal(report);
+                showYearlyReportInModal(report);
             } catch (NumberFormatException e) {
                 showAlert("Ошибка", "Неверный формат года", Alert.AlertType.ERROR);
             }
         }
     }
+
+    @FXML
+    private void onGenerateDepartmentReportClicked() {
+        // Открываем окно выбора кафедры
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(null, employeeService.getAllDepartments());
+        dialog.setTitle("Отчет по кафедре");
+        dialog.setHeaderText("Выберите кафедру для формирования отчета:");
+        dialog.setContentText("Кафедра:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            String departmentName = result.get();
+            int departmentId = employeeService.getDepartmentIdByName(departmentName);
+            if (departmentId != -1) {
+                String report = employeeService.generateDepartmentReport(departmentId);
+                showDepartmentReportInModal(report);
+            } else {
+                showAlert("Ошибка", "Кафедра не найдена", Alert.AlertType.ERROR);
+            }
+        }
+    }
+
+
+    public void showDepartmentReportInModal(String report) {
+        // Создаем новый Stage и отображаем отчет
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        VBox vbox = new VBox(new javafx.scene.control.TextArea(report));
+        Scene scene = new Scene(vbox, 400, 300);
+        stage.setScene(scene);
+        stage.setTitle("Отчет по кафедре");
+        stage.show();
+    }
+
+
 
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
@@ -509,7 +745,7 @@ public class EmployeeController {
         alert.showAndWait();
     }
 
-    private void showReportInModal(String report) {
+    private void showYearlyReportInModal(String report) {
         TextArea textArea = new TextArea(report);
         textArea.setEditable(false);
 

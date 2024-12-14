@@ -359,6 +359,55 @@ public class EmployeeService {
         return "Отчеты за указанный год не найдены.";
     }
 
+    public String generateDepartmentReport(int departmentId) {
+        String query = "SELECT * FROM employees WHERE department_id = ?";
+        double totalSalary = 0;
+        int totalEmployees = 0;
+        double averageYearsWorked = 0;
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, departmentId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                double baseSalary = rs.getDouble("base_salary");
+                int yearsWorked = rs.getInt("years_worked");
+
+                totalSalary += baseSalary;
+                totalEmployees++;
+                averageYearsWorked += yearsWorked;
+            }
+
+            if (totalEmployees > 0) {
+                averageYearsWorked /= totalEmployees;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return new StringBuilder()
+                .append("Общий отчет по кафедре (ID: ").append(departmentId).append("):\n")
+                .append("Общая зарплата: ").append(totalSalary).append("\n")
+                .append("Количество сотрудников: ").append(totalEmployees).append("\n")
+                .append("Средний стаж работы: ").append(averageYearsWorked).append(" лет").toString();
+    }
+
+    public List<Integer> getAllDepartmentIds() {
+        List<Integer> departmentIds = new ArrayList<>();
+        String query = "SELECT id FROM departments";
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                departmentIds.add(rs.getInt("id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return departmentIds;
+    }
+
+
 
 
     // Метод для создания отчета по всем сотрудникам
