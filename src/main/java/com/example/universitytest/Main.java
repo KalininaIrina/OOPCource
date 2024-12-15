@@ -7,6 +7,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 
 public class Main extends Application {
     private static Stage primaryStage; // Хранение основного окна
@@ -23,6 +26,7 @@ public class Main extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         scene.getStylesheets().add(Main.class.getResource("/com/example/universitytest/styles/styles.css").toExternalForm());
 
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/com/example/universitytest/icons/Снимок экрана 2024-12-15 232458.png")));
         primaryStage.setTitle("Управление сотрудниками");
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true); // Устанавливаем окно на весь экран
