@@ -404,39 +404,67 @@ public class EmployeeService {
 
 
 
-    public String generateDepartmentReport(int departmentId) {
-        String query = "SELECT * FROM employees WHERE department_id = ?";
+    public String generateDepartmentReport(int departmentId, int year) {
+        String employeeQuery = "SELECT id FROM employees WHERE department_id = ?";
+        String salaryQuery = "SELECT SUM(net_salary) AS total_salary " +
+                "FROM salary_reports " +
+                "WHERE employee_id = ? AND YEAR(report_date) = ?";
+
         double totalSalary = 0;
         int totalEmployees = 0;
         double averageYearsWorked = 0;
 
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, departmentId);
-            ResultSet rs = stmt.executeQuery();
+        try {
+            // Получаем ID сотрудников кафедры
+            try (PreparedStatement empStmt = connection.prepareStatement(employeeQuery)) {
+                empStmt.setInt(1, departmentId);
+                try (ResultSet empRs = empStmt.executeQuery()) {
+                    while (empRs.next()) {
+                        int employeeId = empRs.getInt("id");
 
-            while (rs.next()) {
-                double baseSalary = rs.getDouble("base_salary");
-                int yearsWorked = rs.getInt("years_worked");
+                        // Считаем суммарную зарплату сотрудника за год
+                        try (PreparedStatement salaryStmt = connection.prepareStatement(salaryQuery)) {
+                            salaryStmt.setInt(1, employeeId);
+                            salaryStmt.setInt(2, year);
 
-                totalSalary += baseSalary;
-                totalEmployees++;
-                averageYearsWorked += yearsWorked;
+                            try (ResultSet salaryRs = salaryStmt.executeQuery()) {
+                                if (salaryRs.next()) {
+                                    double yearlySalary = salaryRs.getDouble("total_salary");
+                                    totalSalary += yearlySalary;
+                                }
+                            }
+                        }
+
+                        totalEmployees++;
+                    }
+                }
             }
 
-            if (totalEmployees > 0) {
-                averageYearsWorked /= totalEmployees;
+            // Получаем средний стаж сотрудников кафедры
+            String yearsWorkedQuery = "SELECT AVG(years_worked) AS avg_years_worked " +
+                    "FROM employees WHERE department_id = ?";
+            try (PreparedStatement yearsStmt = connection.prepareStatement(yearsWorkedQuery)) {
+                yearsStmt.setInt(1, departmentId);
+                try (ResultSet yearsRs = yearsStmt.executeQuery()) {
+                    if (yearsRs.next()) {
+                        averageYearsWorked = yearsRs.getDouble("avg_years_worked");
+                    }
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return "Ошибка при генерации отчета по кафедре.";
         }
 
         return new StringBuilder()
-                .append("Общий отчет по кафедре (ID: ").append(departmentId).append("):\n")
-                .append("Общая зарплата: ").append(totalSalary).append("\n")
+                .append("Отчет по кафедре (ID: ").append(departmentId).append(") за ").append(year).append(" год\n")
+                .append("Общая зарплата за год: ").append(totalSalary).append("\n")
                 .append("Количество сотрудников: ").append(totalEmployees).append("\n")
-                .append("Средний стаж работы: ").append(averageYearsWorked).append(" лет").toString();
+                .append("Средний стаж работы: ").append(String.format("%.2f", averageYearsWorked)).append(" лет")
+                .toString();
     }
+
 
     public List<Integer> getAllDepartmentIds() {
         List<Integer> departmentIds = new ArrayList<>();

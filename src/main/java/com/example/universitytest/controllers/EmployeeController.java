@@ -732,14 +732,34 @@ public class EmployeeController {
         if (result.isPresent()) {
             String departmentName = result.get();
             int departmentId = employeeService.getDepartmentIdByName(departmentName);
+
             if (departmentId != -1) {
-                String report = employeeService.generateDepartmentReport(departmentId);
-                showDepartmentReportInModal(report);
+                // Запрашиваем год у пользователя
+                TextInputDialog yearDialog = new TextInputDialog();
+                yearDialog.setTitle("Годовой отчет по кафедре");
+                yearDialog.setHeaderText("Введите год для формирования отчета:");
+                yearDialog.setContentText("Год:");
+
+                Optional<String> yearResult = yearDialog.showAndWait();
+                if (yearResult.isPresent()) {
+                    try {
+                        int year = Integer.parseInt(yearResult.get());
+                        // Генерация отчета
+                        String report = employeeService.generateDepartmentReport(departmentId, year);
+                        showDepartmentReportInModal(report);
+
+                        // Предлагаем сохранить отчет в файл
+                        saveDepartmentReportToFile(report, "department_report_" + departmentId + "_" + year + ".txt");
+                    } catch (NumberFormatException e) {
+                        showAlert("Ошибка", "Неверный формат года", Alert.AlertType.ERROR);
+                    }
+                }
             } else {
                 showAlert("Ошибка", "Кафедра не найдена", Alert.AlertType.ERROR);
             }
         }
     }
+
 
 
     public void showDepartmentReportInModal(String report) {
@@ -819,6 +839,22 @@ public class EmployeeController {
             }
         }
     }
+
+
+    private void saveDepartmentReportToFile(String report, String fileName) {
+        try {
+            File file = new File(fileName);
+            FileWriter writer = new FileWriter(file);
+            writer.write(report);
+            writer.close();
+
+            showAlert("Успех", "Отчет сохранен в " + fileName, Alert.AlertType.INFORMATION);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Ошибка", "Не удалось сохранить отчет", Alert.AlertType.ERROR);
+        }
+    }
+
 
 
 
