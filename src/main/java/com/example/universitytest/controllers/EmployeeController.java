@@ -13,11 +13,16 @@ import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +31,18 @@ import java.util.stream.Collectors;
 import javafx.stage.Modality;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.TitledPane;
+import java.time.LocalDate; // Для LocalDate
+import javafx.geometry.Insets; // Для Insets
+import javafx.stage.FileChooser; // Для FileChooser
+import java.io.BufferedWriter; // Для записи файла
+import java.io.FileWriter; // Для записи файла
+import java.io.File; // Для работы с файлами
+import java.io.IOException; // Для обработки исключений
+import javafx.scene.control.Alert; // Для отображения Alert
+import javafx.scene.control.Button; // Для кнопок
+import javafx.scene.control.TextArea; // Для текстовой области
+import javafx.scene.layout.VBox; // Для VBox
+
 
 public class EmployeeController {
     @FXML
@@ -746,15 +763,63 @@ public class EmployeeController {
     }
 
     private void showYearlyReportInModal(String report) {
-        TextArea textArea = new TextArea(report);
+        // Создаем новое модальное окно
+        Stage modalStage = new Stage();
+        modalStage.setTitle("Годовой отчет");
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        // Текстовое поле для отображения отчета
+        TextArea reportTextArea = new TextArea(report);
+        reportTextArea.setEditable(false);
+        reportTextArea.setWrapText(true);
+
+        // Кнопка для сохранения отчета
+        Button saveButton = new Button("Сохранить отчет");
+        saveButton.setOnAction(event -> {
+            saveReportToFile(report, "Employee_Report", LocalDate.now().getYear());
+        });
+
+        // Размещаем TextArea и кнопку в контейнере VBox
+        VBox root = new VBox(10, reportTextArea, saveButton);
+        root.setPadding(new Insets(10));
+
+        // Создаем сцену и добавляем ее в окно
+        Scene scene = new Scene(root, 500, 400);
+        modalStage.setScene(scene);
+
+        // Показываем модальное окно
+        modalStage.showAndWait();
+
+
+        /*TextArea textArea = new TextArea(report);
         textArea.setEditable(false);
 
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Годовой отчет");
         modalStage.setScene(new Scene(new VBox(textArea), 400, 300));
-        modalStage.show();
+        modalStage.show();*/
     }
+
+
+    private void saveReportToFile(String report, String reportName, int year) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Сохранить отчет");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Текстовые файлы", "*.txt"));
+        fileChooser.setInitialFileName(reportName + "_" + year + ".txt");
+
+        // Отображаем диалог сохранения файла
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(report);
+                showAlert("Успех", "Отчет успешно сохранен!", Alert.AlertType.INFORMATION);
+            } catch (IOException e) {
+                showAlert("Ошибка", "Ошибка при сохранении файла: " + e.getMessage(), Alert.AlertType.ERROR);
+            }
+        }
+    }
+
 
 
 

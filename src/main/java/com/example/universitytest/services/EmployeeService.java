@@ -331,24 +331,67 @@ public class EmployeeService {
     }
 
     public String generateYearlyReport(int employeeId, int year) {
-        String query = "SELECT SUM(total_salary) AS yearly_salary, COUNT(*) AS report_count " +
+        String salaryQuery = "SELECT SUM(net_salary) AS yearly_salary, COUNT(*) AS report_count " +
                 "FROM salary_reports " +
                 "WHERE employee_id = ? AND YEAR(report_date) = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, employeeId);
-            stmt.setInt(2, year);
+        String employeeQuery = "SELECT last_name, first_name, surname, position_id " +
+                "FROM employees " +
+                "WHERE id = ?";
+        String positionQuery = "SELECT position_name FROM positions WHERE id = ?";
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    double yearlySalary = rs.getDouble("yearly_salary");
-                    int reportCount = rs.getInt("report_count");
+        StringBuilder report = new StringBuilder();
+        String fullName = "Неизвестный сотрудник";
+        String positionName = "Неизвестная должность";
 
-                    return new StringBuilder()
-                            .append("Годовой отчет за ").append(year).append(" год\n")
-                            .append("Сотрудник ID: ").append(employeeId).append("\n")
-                            .append("Количество отчетов: ").append(reportCount).append("\n")
-                            .append("Общая зарплата за год: ").append(yearlySalary).append("\n")
-                            .toString();
+        try {
+            int positionId = -1;
+
+            // Получаем ФИО сотрудника и ID должности
+            try (PreparedStatement empStmt = connection.prepareStatement(employeeQuery)) {
+                empStmt.setInt(1, employeeId);
+                try (ResultSet empRs = empStmt.executeQuery()) {
+                    if (empRs.next()) {
+                        String lastName = empRs.getString("last_name");
+                        String firstName = empRs.getString("first_name");
+                        String surname = empRs.getString("surname");
+                        fullName = lastName + " " + firstName + " " + surname;
+
+                        positionId = empRs.getInt("position_id");
+                    }
+                }
+            }
+
+            // Получаем название должности
+            if (positionId > 0) {
+                try (PreparedStatement posStmt = connection.prepareStatement(positionQuery)) {
+                    posStmt.setInt(1, positionId);
+                    try (ResultSet posRs = posStmt.executeQuery()) {
+                        if (posRs.next()) {
+                            positionName = posRs.getString("position_name");
+                        }
+                    }
+                }
+            }
+
+            // Получаем годовой отчёт по зарплате
+            try (PreparedStatement stmt = connection.prepareStatement(salaryQuery)) {
+                stmt.setInt(1, employeeId);
+                stmt.setInt(2, year);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        double yearlySalary = rs.getDouble("yearly_salary");
+                        int reportCount = rs.getInt("report_count");
+
+                        report.append("Годовой отчет за ").append(year).append(" год\n")
+                                .append("Сотрудник: ").append(fullName).append("\n")
+                                .append("Должность: ").append(positionName).append("\n")
+                                .append("Сотрудник ID: ").append(employeeId).append("\n")
+                                .append("Количество отчетов: ").append(reportCount).append("\n")
+                                .append("Общая зарплата за год: ").append(yearlySalary).append("\n");
+                    } else {
+                        report.append("Отчеты за указанный год не найдены.");
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -356,8 +399,10 @@ public class EmployeeService {
             return "Ошибка при генерации годового отчета.";
         }
 
-        return "Отчеты за указанный год не найдены.";
+        return report.toString();
     }
+
+
 
     public String generateDepartmentReport(int departmentId) {
         String query = "SELECT * FROM employees WHERE department_id = ?";
