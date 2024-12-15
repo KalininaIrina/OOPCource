@@ -104,6 +104,14 @@ public class EmployeeController {
     private EmployeeService employeeService = new EmployeeService(connection);
     private ObservableList<Employee> employeeList = FXCollections.observableArrayList();
 
+    private List<Employee> originalEmployeeList;  // Оригинальный список сотрудников
+    private void loadEmployees() throws SQLException {
+        List<Employee> employees = employeeService.getAllEmployees();  // Загрузка данных из сервиса
+        originalEmployeeList = new ArrayList<>(employees);  // Сохраняем оригинальный список
+        employeeTable.setItems(FXCollections.observableArrayList(employees));  // Устанавливаем данные в таблицу
+    }
+
+
     @FXML
     public void initialize() {
         // Инициализация колонок таблицы
@@ -151,6 +159,8 @@ public class EmployeeController {
             employeeList.addAll(employees);
         }
         employeeTable.setItems(employeeList);
+
+        originalEmployeeList = new ArrayList<>(employeeTable.getItems());
 
         // Инициализация ComboBox для сортировки
         /*sortComboBox.getItems().clear();
@@ -252,6 +262,8 @@ public class EmployeeController {
         } else {
             showAlert("Ошибка", "Пожалуйста, выберите должность и департамент.");
         }
+
+        originalEmployeeList = new ArrayList<>(employeeTable.getItems());
     }
 
     private void updateEmployeeTable() {
@@ -381,6 +393,7 @@ public class EmployeeController {
         } else {
             showAlert("Ошибка", "Выберите сотрудника для сохранения изменений.");
         }
+        originalEmployeeList = new ArrayList<>(employeeTable.getItems());
     }
 
 
@@ -430,6 +443,7 @@ public class EmployeeController {
         } else {
             showAlert("Ошибка", "Выберите сотрудника для удаления");
         }
+        originalEmployeeList = new ArrayList<>(employeeTable.getItems());
     }
 
     private void showAlert(String title, String content) {
@@ -494,6 +508,21 @@ public class EmployeeController {
     }
 
     @FXML
+    private void handleSortByLastNameDescending() {
+        ObservableList<Employee> employeeList = employeeTable.getItems();
+
+        if (employeeList == null || employeeList.isEmpty()) {
+            showAlert("Ошибка", "Нет данных для сортировки.");
+            return;
+        }
+
+        // Сортировка по фамилии в убывающем порядке
+        employeeList.sort(Comparator.comparing(Employee::getLastName, String.CASE_INSENSITIVE_ORDER).reversed());
+        employeeTable.refresh();
+    }
+
+
+    @FXML
     private void handleSortBySalary() {
         ObservableList<Employee> employeeList = employeeTable.getItems();
 
@@ -507,9 +536,53 @@ public class EmployeeController {
         employeeTable.refresh();
     }
 
+    @FXML
+    private void handleSortBySalaryDescending() {
+        ObservableList<Employee> employeeList = employeeTable.getItems();
+
+        if (employeeList == null || employeeList.isEmpty()) {
+            showAlert("Ошибка", "Нет данных для сортировки.");
+            return;
+        }
+
+        // Сортировка по зарплате в убывающем порядке
+        employeeList.sort(Comparator.comparingDouble(Employee::getBaseSalary).reversed());
+        employeeTable.refresh();
+    }
+
+
 
     @FXML
     private void resetFilters() {
+        // Сброс всех фильтров
+        lastNameField.clear();
+        firstNameField.clear();
+        surnameField.clear();
+        departmentComboBox.getSelectionModel().clearSelection();
+        positionComboBox.getSelectionModel().clearSelection();
+        academicDegreeCheck.setSelected(false);
+
+        // Обновление таблицы после сброса фильтров
+        updateEmployeeTable();
+    }
+
+
+
+    @FXML
+    private void resetSorting() {
+        // Очищаем текущую сортировку
+        employeeTable.getSortOrder().clear();
+
+        // Обновляем таблицу после сброса сортировки
+        updateEmployeeTable();
+    }
+
+
+
+
+
+    @FXML
+    private void resetAllFilters() {
         // Сбрасываем фильтры по кафедре и должности
         //filterDepartmentComboBox.setValue("Все");
         //filterPositionComboBox.setValue("Все");

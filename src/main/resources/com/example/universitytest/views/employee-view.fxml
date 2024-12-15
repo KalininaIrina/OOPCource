@@ -27,7 +27,6 @@
             fx:controller="com.example.universitytest.controllers.EmployeeController">
 
     <!-- Верхняя панель: MenuBar -->
-    <!-- Верхняя панель: MenuBar -->
     <top>
         <MenuBar styleClass="menu-bar">
             <Menu text="Редактировать" styleClass="menu">
@@ -35,13 +34,26 @@
                 <MenuItem text="Редактировать" onAction="#loadEmployeeDataForEditing"/>
                 <MenuItem text="Сохранить изменения" onAction="#handleSaveEmployeeChanges"/>
                 <MenuItem text="Удалить" onAction="#handleDeleteEmployee"/>
-                <SeparatorMenuItem/>
-                <MenuItem text="Сортировать по фамилии" onAction="#handleSortByLastName"/>
-                <MenuItem text="Сортировать по зарплате" onAction="#handleSortBySalary"/>
-                <SeparatorMenuItem/>
+            </Menu>
+
+            <!-- Новое меню для Сортировки -->
+            <Menu text="Сортировка" styleClass="menu">
+                <MenuItem text="Сортировать по фамилии А-Я" onAction="#handleSortByLastName"/>
+                <MenuItem text="Сортировать по фамилии Я-А" onAction="#handleSortByLastNameDescending"/>
+                <MenuItem text="Сортировать по зарплате ↑" onAction="#handleSortBySalary"/>
+                <MenuItem text="Сортировать по зарплате ↓" onAction="#handleSortBySalaryDescending"/>
+                <MenuItem text="Сбросить сортировку" onAction="#resetSorting"/>
+            </Menu>
+
+            <!-- Новое меню для Фильтрации -->
+            <Menu text="Фильтрация" styleClass="menu">
                 <MenuItem text="Фильтр по кафедре" onAction="#handleFilterByDepartment"/>
                 <MenuItem text="Фильтр по должности" onAction="#handleFilterByPosition"/>
                 <MenuItem text="Сбросить фильтры" onAction="#resetFilters"/>
+            </Menu>
+
+            <Menu text="Сбросить" styleClass="menu">
+                <MenuItem text="Сбросить все" onAction="#resetAllFilters"/>
             </Menu>
 
             <Menu text="Отчёты" styleClass="menu">
@@ -51,7 +63,6 @@
             </Menu>
         </MenuBar>
     </top>
-
 
     <!-- Центральная часть: текущий интерфейс -->
     <center>
@@ -86,12 +97,16 @@
                 <VBox spacing="10" alignment="CENTER">
                     <Button text="Добавить" onAction="#handleAddEmployee" prefWidth="200"/>
                     <Button text="Редактировать" onAction="#loadEmployeeDataForEditing" prefWidth="200"/>
+                    <Button text="Сохранить изменения" onAction="#handleSaveEmployeeChanges" styleClass="button" prefWidth="200"/>
                     <Button text="Удалить" onAction="#handleDeleteEmployee" prefWidth="200"/>
                 </VBox>
+                <!-- Кнопка калькулятора зарплаты -->
+                <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button" prefWidth="200"/>
             </VBox>
         </HBox>
     </center>
 </BorderPane>
+
 
         <!--<ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
                     <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Должность" styleClass="combo-box"/>-->
