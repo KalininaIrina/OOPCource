@@ -245,6 +245,7 @@ public class EmployeeController {
                 // Добавляем сотрудника в локальный список и обновляем таблицу
                 employeeList.add(newEmployee);
                 employeeTable.refresh();
+                updateEmployeeTable();
 
                 // Очищаем все поля
                 firstNameField.clear();
@@ -284,27 +285,6 @@ public class EmployeeController {
     }
 
 
-
-    /*@FXML
-    private void handleUpdateEmployee() {
-        // Получаем выбранного сотрудника
-        Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
-
-        if (selectedEmployee != null) {
-            // Обновляем информацию о сотруднике в базе данных
-            employeeService.updateEmployee(selectedEmployee);
-
-            // После обновления данных обновляем таблицу сотрудников
-            updateEmployeeTable();
-
-            // Показываем сообщение об успешном обновлении
-            showAlert("Успех", "Данные сотрудника обновлены успешно!");
-
-        } else {
-            // Если сотрудник не выбран, показываем ошибку
-            showAlert("Ошибка", "Пожалуйста, выберите сотрудника для обновления.");
-        }
-    }*/
 
     @FXML
     private void loadEmployeeDataForEditing() {
@@ -453,45 +433,6 @@ public class EmployeeController {
         alert.showAndWait();
     }
 
-    @FXML
-    private void handleSortEmployees() {
-        // Получаем выбранный критерий сортировки из ComboBox
-        String selectedCriterion = sortComboBox.getValue();
-
-        // Проверяем, что пользователь выбрал критерий сортировки
-        if (selectedCriterion == null) {
-            showAlert("Ошибка", "Выберите критерий сортировки.");
-            return;
-        }
-
-        // Копируем текущие данные из таблицы
-        ObservableList<Employee> employeeList = employeeTable.getItems();
-
-        // Если таблица пустая, сообщаем об этом
-        if (employeeList == null || employeeList.isEmpty()) {
-            showAlert("Ошибка", "Нет данных для сортировки.");
-            return;
-        }
-
-        // Сортируем список сотрудников в зависимости от выбранного критерия
-        List<Employee> sortedEmployeeList = new ArrayList<>(employeeList);
-        switch (selectedCriterion) {
-            case "По фамилии":
-                sortedEmployeeList.sort(Comparator.comparing(Employee::getLastName, String.CASE_INSENSITIVE_ORDER));
-                break;
-
-            case "По зарплате":
-                sortedEmployeeList.sort(Comparator.comparingDouble(Employee::getBaseSalary));
-                break;
-
-            default:
-                showAlert("Ошибка", "Неизвестный критерий сортировки.");
-                return;
-        }
-
-        // Обновляем таблицу с отсортированным списком
-        employeeTable.setItems(FXCollections.observableArrayList(sortedEmployeeList));
-    }
 
     @FXML
     private void handleSortByLastName() {
@@ -593,40 +534,6 @@ public class EmployeeController {
         // Перезагружаем все сотрудники в таблицу
         updateEmployeeTable();
     }
-
-
-
-    /*@FXML
-    private void handleFilterEmployees() {
-        String selectedDepartment = filterDepartmentComboBox.getValue();
-        String selectedPosition = filterPositionComboBox.getValue();
-
-        // Получаем полный список сотрудников из базы
-        List<Employee> allEmployees;
-        try {
-            allEmployees = employeeService.getAllEmployees();
-        } catch (SQLException e) {
-            showAlert("Ошибка", "Не удалось загрузить данные сотрудников.");
-            return;
-        }
-
-        // Фильтруем список
-        List<Employee> filteredEmployees = allEmployees.stream()
-                .filter(employee -> {
-                    boolean matchesDepartment = "Все".equals(selectedDepartment) ||
-                            employeeService.getDepartmentById(employee.getDepartmentId()).equals(selectedDepartment);
-
-                    boolean matchesPosition = "Все".equals(selectedPosition) ||
-                            employeeService.getPositionById(employee.getPositionId()).equals(selectedPosition);
-
-                    return matchesDepartment && matchesPosition;
-                })
-                .collect(Collectors.toList());
-
-        // Обновляем таблицу
-        employeeTable.setItems(FXCollections.observableArrayList(filteredEmployees));
-    }*/
-
 
     @FXML
     private void handleFilterByDepartment() {
@@ -822,7 +729,7 @@ public class EmployeeController {
                         showDepartmentReportInModal(report);
 
                         // Предлагаем сохранить отчет в файл
-                        saveDepartmentReportToFile(report, "department_report_" + departmentId + "_" + year + ".txt");
+                        //saveDepartmentReportToFile(report, "department_report_" + departmentId + "_" + year + ".txt");
                     } catch (NumberFormatException e) {
                         showAlert("Ошибка", "Неверный формат года", Alert.AlertType.ERROR);
                     }
@@ -837,13 +744,55 @@ public class EmployeeController {
 
     public void showDepartmentReportInModal(String report) {
         // Создаем новый Stage и отображаем отчет
-        Stage stage = new Stage();
+        /*Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         VBox vbox = new VBox(new javafx.scene.control.TextArea(report));
         Scene scene = new Scene(vbox, 400, 300);
         stage.setScene(scene);
         stage.setTitle("Отчет по кафедре");
-        stage.show();
+        stage.show();*/
+
+
+
+
+
+
+
+
+
+
+
+
+        // Создаем новое модальное окно
+        Stage modalStage = new Stage();
+        modalStage.setTitle("Годовой отчет по кафедре");
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+
+        // Текстовое поле для отображения отчета
+        TextArea reportTextArea = new TextArea(report);
+        reportTextArea.setEditable(false);
+        reportTextArea.setWrapText(true);
+
+        //String departmentName = result.get();
+        //int departmentId = employeeService.getDepartmentIdByName(departmentName);
+
+        // Кнопка для сохранения отчета
+        Button saveButton = new Button("Сохранить отчет");
+        saveButton.setOnAction(event -> {
+            saveDepartmentReportToFile(report, "department_report", LocalDate.now().getYear());
+            //saveReportToFile(report, "Employee_Report", LocalDate.now().getYear());
+        });
+
+        // Размещаем TextArea и кнопку в контейнере VBox
+        VBox root = new VBox(10, reportTextArea, saveButton);
+        root.setPadding(new Insets(10));
+
+        // Создаем сцену и добавляем ее в окно
+        Scene scene = new Scene(root, 500, 400);
+        modalStage.setScene(scene);
+
+        // Показываем модальное окно
+        modalStage.showAndWait();
     }
 
 
@@ -914,17 +863,21 @@ public class EmployeeController {
     }
 
 
-    private void saveDepartmentReportToFile(String report, String fileName) {
-        try {
-            File file = new File(fileName);
-            FileWriter writer = new FileWriter(file);
-            writer.write(report);
-            writer.close();
+    private void saveDepartmentReportToFile(String report, String fileName, int year) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Сохранить отчет");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Текстовые файлы", "*.txt"));
+        fileChooser.setInitialFileName(fileName + "_" + year + ".txt");
 
-            showAlert("Успех", "Отчет сохранен в " + fileName, Alert.AlertType.INFORMATION);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Ошибка", "Не удалось сохранить отчет", Alert.AlertType.ERROR);
+        // Отображаем диалог сохранения файла
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(report);
+                showAlert("Успех", "Отчет успешно сохранен!", Alert.AlertType.INFORMATION);
+            } catch (IOException e) {
+                showAlert("Ошибка", "Ошибка при сохранении файла: " + e.getMessage(), Alert.AlertType.ERROR);
+            }
         }
     }
 

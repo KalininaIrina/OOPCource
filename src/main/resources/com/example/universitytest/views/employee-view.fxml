@@ -22,46 +22,55 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 
 
-
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.universitytest.controllers.EmployeeController">
 
     <!-- Верхняя панель: MenuBar -->
     <top>
-        <MenuBar styleClass="menu-bar">
-            <Menu text="Редактировать" styleClass="menu">
-                <MenuItem text="Добавить" onAction="#handleAddEmployee"/>
-                <MenuItem text="Редактировать" onAction="#loadEmployeeDataForEditing"/>
-                <MenuItem text="Сохранить изменения" onAction="#handleSaveEmployeeChanges"/>
-                <MenuItem text="Удалить" onAction="#handleDeleteEmployee"/>
-            </Menu>
+        <HBox style="-fx-padding: 5;" alignment="CENTER">
+            <!-- Левая группа меню -->
+            <MenuBar styleClass="menu-bar" prefWidth="285">
+                <Menu text="Управление сотрудниками" styleClass="menu">
+                    <MenuItem text="Добавить" onAction="#handleAddEmployee"/>
+                    <MenuItem text="Редактировать" onAction="#loadEmployeeDataForEditing"/>
+                    <MenuItem text="Сохранить изменения" onAction="#handleSaveEmployeeChanges"/>
+                    <MenuItem text="Удалить" onAction="#handleDeleteEmployee"/>
+                </Menu>
+                <Menu text="Отчёты" styleClass="menu">
+                    <MenuItem text="Калькулятор зарплаты" onAction="#handleOpenSalaryView"/>
+                    <MenuItem text="Годовой отчёт" onAction="#onGenerateYearlyReportClicked"/>
+                    <MenuItem text="Отчёт по кафедре" onAction="#onGenerateDepartmentReportClicked"/>
+                </Menu>
+            </MenuBar>
 
-            <!-- Новое меню для Сортировки -->
-            <Menu text="Сортировка" styleClass="menu">
-                <MenuItem text="Сортировать по фамилии А-Я" onAction="#handleSortByLastName"/>
-                <MenuItem text="Сортировать по фамилии Я-А" onAction="#handleSortByLastNameDescending"/>
-                <MenuItem text="Сортировать по зарплате ↑" onAction="#handleSortBySalary"/>
-                <MenuItem text="Сортировать по зарплате ↓" onAction="#handleSortBySalaryDescending"/>
-                <MenuItem text="Сбросить сортировку" onAction="#resetSorting"/>
-            </Menu>
+            <!-- Заполнитель для разделения -->
+            <Region HBox.hgrow="ALWAYS"/>
 
-            <!-- Новое меню для Фильтрации -->
-            <Menu text="Фильтрация" styleClass="menu">
-                <MenuItem text="Фильтр по кафедре" onAction="#handleFilterByDepartment"/>
-                <MenuItem text="Фильтр по должности" onAction="#handleFilterByPosition"/>
-                <MenuItem text="Сбросить фильтры" onAction="#resetFilters"/>
-            </Menu>
+            <!-- Правая группа меню -->
+            <MenuBar styleClass="menu-bar">
+                <!-- Меню Сортировка -->
+                <Menu text="Сортировка" styleClass="menu">
+                    <MenuItem text="Сортировать по фамилии А-Я" onAction="#handleSortByLastName"/>
+                    <MenuItem text="Сортировать по фамилии Я-А" onAction="#handleSortByLastNameDescending"/>
+                    <MenuItem text="Сортировать по зарплате ↑" onAction="#handleSortBySalary"/>
+                    <MenuItem text="Сортировать по зарплате ↓" onAction="#handleSortBySalaryDescending"/>
+                    <MenuItem text="Сбросить сортировку" onAction="#resetSorting"/>
+                </Menu>
 
-            <Menu text="Сбросить" styleClass="menu">
-                <MenuItem text="Сбросить все" onAction="#resetAllFilters"/>
-            </Menu>
+                <!-- Меню Фильтрация -->
+                <Menu text="Фильтрация" styleClass="menu">
+                    <MenuItem text="Фильтр по кафедре" onAction="#handleFilterByDepartment"/>
+                    <MenuItem text="Фильтр по должности" onAction="#handleFilterByPosition"/>
+                    <MenuItem text="Сбросить фильтры" onAction="#resetFilters"/>
+                </Menu>
 
-            <Menu text="Отчёты" styleClass="menu">
-                <MenuItem text="Калькулятор зарплаты" onAction="#handleOpenSalaryView"/>
-                <MenuItem text="Годовой отчёт" onAction="#onGenerateYearlyReportClicked"/>
-                <MenuItem text="Отчёт по кафедре" onAction="#onGenerateDepartmentReportClicked"/>
-            </Menu>
-        </MenuBar>
+                <Menu text="Сбросить" styleClass="menu">
+                    <MenuItem text="Сбросить все" onAction="#resetAllFilters"/>
+                </Menu>
+            </MenuBar>
+        </HBox>
     </top>
 
     <!-- Центральная часть: текущий интерфейс -->
@@ -93,20 +102,29 @@
                     <ComboBox fx:id="departmentComboBox" prefWidth="350" promptText="Кафедра" styleClass="combo-box"/>
                     <ComboBox fx:id="positionComboBox" prefWidth="350" promptText="Должность" styleClass="combo-box"/>
                 </VBox>
-                <!-- Кнопки -->
-                <VBox spacing="10" alignment="CENTER">
-                    <Button text="Добавить" onAction="#handleAddEmployee" prefWidth="200"/>
-                    <Button text="Редактировать" onAction="#loadEmployeeDataForEditing" prefWidth="200"/>
-                    <Button text="Сохранить изменения" onAction="#handleSaveEmployeeChanges" styleClass="button" prefWidth="200"/>
-                    <Button text="Удалить" onAction="#handleDeleteEmployee" prefWidth="200"/>
+
+                <!-- Контейнер для кнопок, выравнивание по центру -->
+                <HBox spacing="10" alignment="CENTER">
+                    <!-- Первая колонка кнопок -->
+                    <VBox spacing="15" alignment="CENTER">
+                        <Button text="Добавить" onAction="#handleAddEmployee" styleClass="button" style="-fx-pref-width: 220px;"/>
+                        <Button text="Редактировать" onAction="#loadEmployeeDataForEditing" styleClass="button" style="-fx-pref-width: 220px;"/>
+                    </VBox>
+
+                    <!-- Вторая колонка кнопок -->
+                    <VBox spacing="15" alignment="CENTER">
+                        <Button text="Сохранить изменения" onAction="#handleSaveEmployeeChanges" styleClass="button" style="-fx-pref-width: 220px;"/>
+                        <Button text="Удалить" onAction="#handleDeleteEmployee" styleClass="button" style="-fx-pref-width: 220px;"/>
+                    </VBox>
+                </HBox>
+                <!-- Кнопка калькулятора зарплаты внизу -->
+                <VBox spacing="15" alignment="CENTER">
+                    <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button" style="-fx-pref-width: 220px;"/>
                 </VBox>
-                <!-- Кнопка калькулятора зарплаты -->
-                <Button text="Калькулятор зарплаты" onAction="#handleOpenSalaryView" styleClass="button" prefWidth="200"/>
             </VBox>
         </HBox>
     </center>
 </BorderPane>
-
 
         <!--<ComboBox fx:id="departmentComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Кафедра" styleClass="combo-box"/>
                     <ComboBox fx:id="positionComboBox" layoutX="150" layoutY="200" prefWidth="200" promptText="Должность" styleClass="combo-box"/>-->
